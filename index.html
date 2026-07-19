@@ -276,14 +276,14 @@
 
   /* ===================== MODAL ===================== */
   .overlay{
-    position:fixed; inset:0; background:rgba(8,20,45,.55); z-index:60;
+    position:fixed; inset:0; background:rgba(8,20,45,.75); z-index:9999;
     display:flex; align-items:center; justify-content:center; padding:20px;
     animation:fadeIn .18s ease-out both;
   }
   @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
   .modal{
     background:#fff; border-radius:6px; max-width:420px; width:100%; padding:26px 26px 22px;
-    box-shadow:0 30px 60px -15px rgba(0,0,0,.4); border-top:4px solid var(--crimson-600);
+    box-shadow:0 30px 60px -15px rgba(0,0,0,.5); border-top:4px solid var(--crimson-600);
   }
   .modal h3{font-family:var(--font-display); margin:0 0 10px; font-size:18px; color:var(--navy-900);}
   .modal p{font-size:13.5px; color:var(--ink-600); line-height:1.6; margin:0 0 8px;}
@@ -490,6 +490,8 @@ const state = {
   timerHandle: null,
   waktuMulai: null,
   showFinishModal: false,
+  showKickModal: false,       // Modal khusus jika curang
+  kickReason: '',
   finishedAt: null,
   warnCount: 0
 };
@@ -573,6 +575,7 @@ app.addEventListener('click', (e)=>{
   else if(action==='open-finish') { state.showFinishModal = true; render(); }
   else if(action==='cancel-finish') { state.showFinishModal = false; render(); }
   else if(action==='confirm-finish') { finishExam(false); }
+  else if(action==='close-kick-modal') { resetTerkick(); }
 });
 
 app.addEventListener('change', (e)=>{
@@ -667,19 +670,16 @@ function finishExam(autoBySystem){
   render();
 }
 
-/* Anti-cheat visual cue */
-document.addEventListener('visibilitychange', ()=>{
-  if(state.screen==='exam' && document.hidden){
-    state.warnCount++;
-    showToast('Peringatan ke-'+state.warnCount+': sistem mendeteksi Anda meninggalkan jendela ujian.');
-  }
-});
-window.addEventListener('beforeunload', (e)=>{
-  if(state.screen==='exam'){
-    e.preventDefault();
-    e.returnValue='';
-  }
-});
+function resetTerkick() {
+    state.showKickModal = false;
+    state.screen = 'login';
+    state.peserta = { nama:'', kelas:'', sekolah:'', bidang:'IPA', paket:'' };
+    state.currentIndex = 0;
+    state.jawaban = {};
+    state.raguRagu = {};
+    state.sisaDetik = EXAM_CONFIG.durasiMenit * 60;
+    render(); 
+}
 
 /* ================================================================
    RENDER — LOGIN
@@ -919,6 +919,29 @@ function renderFinishModal(stat){
   `;
 }
 
+/* ================================================================
+   RENDER — KICK MODAL (ANTI-CHEAT)
+================================================================ */
+function renderKickModal(){
+  return `
+  <div class="overlay" style="z-index:9999;">
+    <div class="modal" style="border-top-color: var(--crimson-700); text-align: center;">
+      <div class="stamp stamp-anim" style="margin:0 auto 16px; width:70px; height:70px; border-color:var(--crimson-700); color:var(--crimson-700);">
+        <span class="l2" style="font-size:11px;">KICKED</span>
+      </div>
+      <h3 style="color: var(--crimson-700); font-size: 20px;">Sesi Ujian Dibatalkan!</h3>
+      <p style="color: var(--ink-900);">Sistem mendeteksi aktivitas yang tidak diizinkan selama ujian berlangsung.</p>
+      
+      <div style="background: #fcf0f0; border: 1px solid #f2c7c9; padding: 14px; border-radius: 5px; margin: 18px 0; color: var(--crimson-700); font-size: 13.5px; text-align: left; line-height: 1.5;">
+        <b>Alasan Pelanggaran:</b><br>${state.kickReason}
+      </div>
+      
+      <button class="btn btn-danger" style="width:100%;" data-action="close-kick-modal">Kembali ke Halaman Login</button>
+    </div>
+  </div>
+  `;
+}
+
 /* Update sidebar khusus toggle checkbox tanpa rerender total (agar teks fokus tidak hilang) */
 function renderSidebarOnly(){
   render();
@@ -976,11 +999,73 @@ function render(){
   else if(state.screen==='rules') html = renderRules();
   else if(state.screen==='exam') html = renderExam();
   else if(state.screen==='finished') html = renderFinished();
+  
+  // Tampilkan Kick Modal menimpa screen apa pun jika terpicu
+  if(state.showKickModal) html += renderKickModal();
+  
   app.innerHTML = html;
-  if(state.screen==='exam') updateTimerDisplay();
+  if(state.screen==='exam' && !state.showKickModal) updateTimerDisplay();
 }
 
 render();
+
+/* ================================================================
+   SISTEM KEAMANAN KETAT (ANTI-CHEAT)
+================================================================ */
+function kickOutPeserta(alasan) {
+    if(state.showKickModal) return; // Mencegah trigger berulang kali
+    
+    stopTimer(); // Hentikan penghitung waktu
+    
+    // Paksa keluar dari fullscreen jika masih menyala
+    if(document.exitFullscreen && document.fullscreenElement){
+        document.exitFullscreen().catch(()=>{});
+    }
+    
+    // Setel status modal
+    state.kickReason = alasan;
+    state.showKickModal = true;
+    
+    render(); // Tampilkan modal peringatan berdesain rapi
+}
+
+// 1. Deteksi jika peserta pindah tab atau meminimalkan browser
+document.addEventListener('visibilitychange', () => {
+    if (state.screen === 'exam' && document.hidden) {
+        kickOutPeserta("Berpindah tab atau meminimalkan jendela browser.");
+    }
+});
+
+// 2. Deteksi jika peserta membuka aplikasi lain (kehilangan fokus)
+window.addEventListener('blur', () => {
+    if (state.screen === 'exam') {
+        kickOutPeserta("Membuka aplikasi lain, klik di luar area ujian, atau menggunakan *shortcut* yang tidak diizinkan.");
+    }
+});
+
+// 3. Deteksi jika peserta keluar dari mode Full Screen (ESC)
+document.addEventListener('fullscreenchange', () => {
+    // Jika sedang ujian tapi elemen fullscreen tiba-tiba hilang
+    if (state.screen === 'exam' && !document.fullscreenElement) {
+        kickOutPeserta("Keluar dari mode Layar Penuh (Full Screen).");
+    }
+});
+
+// 4. Mencegah reload halaman secara tidak sengaja
+window.addEventListener('beforeunload', (e) => {
+    if (state.screen === 'exam' && !state.showKickModal) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+
+// 5. Mencegah klik kanan (Inspect Element / Copy Paste)
+document.addEventListener('contextmenu', (e) => {
+    if (state.screen === 'exam') {
+        e.preventDefault();
+        showToast("Tindakan ini (Klik Kanan) dinonaktifkan demi keamanan.");
+    }
+});
 </script>
 </body>
 </html>
