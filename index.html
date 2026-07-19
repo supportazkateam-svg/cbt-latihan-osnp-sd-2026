@@ -338,8 +338,8 @@ const BANK_SOAL = [
         id: 1, subtes: "IPA - Paket 1",
         teks: `Perhatikan komponen jaring-jaring makanan pada ekosistem laut dalam berikut.<br>
                 <div class="q-image-container"><img src="gambar-1.png" alt="[Gambar Jaring Makanan Ekosistem Laut]"></div>
-                Fitoplankton berperan sebagai produsen tunggal yang dimakan oleh zooplankton dan udang kecil. Zooplankton menjadi sumber makanan bagi ikan kecil dan ubur-ubur. Udang kecil dimakan oleh ikan kecil dan ikan besar. Selanjutnya, ubur-ubur dimakan oleh ikan besar. Ikan kecil menjadi mangsa bagi ikan besar dan burung laut. Di ujung jaring-jaring makanan, ikan besar and burung laut menjadi mangsa utama bagi hiu.<br><br>
-                Berdasarkan struktur jaring-jaring makanan tersebut, nilai dari selisih jumlah seluruh rantai makanan yang ada dengan jumlah organisme yang menempati tingkatan sebagai konsumen tingkat II (konsumen sekunder) adalah <b>...(A)...</b>, sementara jumlah organisme yang dapat bertindak sebagai konsumen puncak adalah <b>...(B)...</b><br>
+                Fitoplankton berperan sebagai produsen tunggal yang dimakan oleh zooplankton dan udang kecil. Zooplankton menjadi sumber makanan bagi ikan kecil dan ubur-ubur. Udang kecil dimakan oleh ikan kecil dan ikan besar. Selanjutnya, ubur-ubur dimakan oleh ikan besar. Ikan kecil menjadi mangsa bagi ikan besar dan burung laut. Di ujung jaring-jaring makanan, ikan besar dan burung laut menjadi mangsa utama bagi hiu.<br><br>
+                Bdasarkan struktur jaring-jaring makanan tersebut, nilai dari selisih jumlah seluruh rantai makanan yang ada dengan jumlah organisme yang menempati tingkatan sebagai konsumen tingkat II (konsumen sekunder) adalah <b>...(A)...</b>, sementara jumlah organisme yang dapat bertindak sebagai konsumen puncak adalah <b>...(B)...</b><br>
                 ${formatInstruction}`
     },
     { 
@@ -464,13 +464,14 @@ const BANK_SOAL = [
 ];
 
 /* ================================================================
-   LOGOS (Sistem Fallback Ekstensi Otomatis Anti-Gagal)
+   LOGOS (Transparan & Skala Lebih Besar 1.35x + Drop Shadow)
 ================================================================ */
 function renderLogos(size) {
+  const adjustedSize = size * 1.35; 
   return `
-  <div style="display:flex; align-items:center; gap:8px;" class="ribbon-emblem">
-    <img src="logo-osn.jpeg" onerror="this.src='logo-osn.jpg'; this.onerror=function(){this.src='logo-osn.png'; this.onerror=function(){this.src='logo-osn.webp';}}" alt="Logo OSN" style="width:${size}px; height:${size}px; border-radius:8px; object-fit:contain; background:#fff; padding:2px; box-shadow:0 2px 4px rgba(0,0,0,0.15);">
-    <img src="logo-azka.jpeg" onerror="this.src='logo-azka.jpg'; this.onerror=function(){this.src='logo-azka.png'; this.onerror=function(){this.src='logo-azka.webp';}}" alt="Logo AzkaTeam" style="width:${size}px; height:${size}px; border-radius:8px; object-fit:contain; background:#fff; padding:2px; box-shadow:0 2px 4px rgba(0,0,0,0.15);">
+  <div style="display:flex; align-items:center; gap:10px;" class="ribbon-emblem">
+    <img src="logo-osn.png" onerror="this.src='logo-osn.jpg'; this.onerror=function(){this.src='logo-osn.jpeg'; this.onerror=function(){this.src='logo-osn.webp';}}" alt="Logo OSN" style="width:${adjustedSize}px; height:${adjustedSize}px; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+    <img src="logo-azka.jpeg" onerror="this.src='logo-azka.jpg'; this.onerror=function(){this.src='logo-azka.png'; this.onerror=function(){this.src='logo-azka.webp';}}" alt="Logo AzkaTeam" style="width:${adjustedSize}px; height:${adjustedSize}px; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
   </div>`;
 }
 
