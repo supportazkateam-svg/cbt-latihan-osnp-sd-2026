@@ -338,7 +338,7 @@ const BANK_SOAL = [
         id: 1, subtes: "IPA - Paket 1",
         teks: `Perhatikan komponen jaring-jaring makanan pada ekosistem laut dalam berikut.<br>
                 <div class="q-image-container"><img src="gambar-1.png" alt="[Gambar Jaring Makanan Ekosistem Laut]"></div>
-                Fitoplankton berperan sebagai produsen tunggal yang dimakan oleh zooplankton dan udang kecil. Zooplankton menjadi sumber makanan bagi ikan kecil dan ubur-ubur. Udang kecil dimakan oleh ikan kecil dan ikan besar. Selanjutnya, ubur-ubur dimakan oleh ikan besar. Ikan kecil menjadi mangsa bagi ikan besar dan burung laut. Di ujung jaring-jaring makanan, ikan besar dan burung laut menjadi mangsa utama bagi hiu.<br><br>
+                Fitoplankton berperan sebagai produsen tunggal yang dimakan oleh zooplankton dan udang kecil. Zooplankton menjadi sumber makanan bagi ikan kecil dan ubur-ubur. Udang kecil dimakan oleh ikan kecil dan ikan besar. Selanjutnya, ubur-ubur dimakan oleh ikan besar. Ikan kecil menjadi mangsa bagi ikan besar dan burung laut. Di ujung jaring-jaring makanan, ikan besar and burung laut menjadi mangsa utama bagi hiu.<br><br>
                 Berdasarkan struktur jaring-jaring makanan tersebut, nilai dari selisih jumlah seluruh rantai makanan yang ada dengan jumlah organisme yang menempati tingkatan sebagai konsumen tingkat II (konsumen sekunder) adalah <b>...(A)...</b>, sementara jumlah organisme yang dapat bertindak sebagai konsumen puncak adalah <b>...(B)...</b><br>
                 ${formatInstruction}`
     },
@@ -464,13 +464,13 @@ const BANK_SOAL = [
 ];
 
 /* ================================================================
-   LOGOS (Menggantikan fungsi emblemSVG)
+   LOGOS (Sistem Fallback Ekstensi Otomatis Anti-Gagal)
 ================================================================ */
 function renderLogos(size) {
   return `
   <div style="display:flex; align-items:center; gap:8px;" class="ribbon-emblem">
-    <img src="8BF1E729-83A3-49C3-BBD8-EDB9617E1777.jpeg" alt="Logo OSN" style="width:${size}px; height:${size}px; border-radius:8px; object-fit:contain; background:#fff; padding:2px; box-shadow:0 2px 4px rgba(0,0,0,0.15);">
-    <img src="D90B620B-1EF3-4E9A-9486-3BE2E3E69F2D.jpeg" alt="Logo AzkaTeam" style="width:${size}px; height:${size}px; border-radius:8px; object-fit:contain; background:#fff; padding:2px; box-shadow:0 2px 4px rgba(0,0,0,0.15);">
+    <img src="logo-osn.jpeg" onerror="this.src='logo-osn.jpg'; this.onerror=function(){this.src='logo-osn.png'; this.onerror=function(){this.src='logo-osn.webp';}}" alt="Logo OSN" style="width:${size}px; height:${size}px; border-radius:8px; object-fit:contain; background:#fff; padding:2px; box-shadow:0 2px 4px rgba(0,0,0,0.15);">
+    <img src="logo-azka.jpeg" onerror="this.src='logo-azka.jpg'; this.onerror=function(){this.src='logo-azka.png'; this.onerror=function(){this.src='logo-azka.webp';}}" alt="Logo AzkaTeam" style="width:${size}px; height:${size}px; border-radius:8px; object-fit:contain; background:#fff; padding:2px; box-shadow:0 2px 4px rgba(0,0,0,0.15);">
   </div>`;
 }
 
@@ -481,13 +481,13 @@ const state = {
   screen: 'login',           
   peserta: { nama:'', kelas:'', sekolah:'', bidang:'IPA', paket:'' },
   currentIndex: 0,
-  jawaban: {},                // Menyimpan teks dari textarea
-  raguRagu: {},               // { soalId: true }
+  jawaban: {},                
+  raguRagu: {},               
   sisaDetik: EXAM_CONFIG.durasiMenit * 60,
   timerHandle: null,
   waktuMulai: null,
   showFinishModal: false,
-  showKickModal: false,       // Modal khusus jika curang
+  showKickModal: false,       
   kickReason: '',
   finishedAt: null,
   warnCount: 0
@@ -502,11 +502,10 @@ function formatWaktu(detik){
   const h = Math.floor(detik/3600).toString().padStart(2,'0');
   const m = Math.floor((detik%3600)/60).toString().padStart(2,'0');
   const s = Math.floor(detik%60).toString().padStart(2,'0');
-  return h+':'+m+':'+s; // Format Jam:Menit:Detik karena durasi 60 menit
+  return h+':'+m+':'+s; 
 }
 function hitungStatistik(){
   const total = BANK_SOAL.length;
-  // Soal dianggap dijawab jika textareanya tidak kosong (setelah di-trim)
   const dijawab = Object.keys(state.jawaban).filter(k => state.jawaban[k].trim().length > 0).length;
   const ragu = Object.keys(state.raguRagu).filter(k=>state.raguRagu[k]).length;
   return { total, dijawab, belum: total-dijawab, ragu };
@@ -587,12 +586,10 @@ app.addEventListener('change', (e)=>{
   }
 });
 
-// Auto-save untuk Isian Singkat
 app.addEventListener('input', (e)=>{
     const t = e.target;
     if(t.dataset && t.dataset.action==='input-answer'){
         state.jawaban[t.dataset.qid] = t.value;
-        // Update tampilan sidebar (warna grid biru) secara live tanpa render ulang seluruh exam
         updateSidebarVisuals(t.dataset.qid);
     }
 });
@@ -610,7 +607,6 @@ function updateSidebarVisuals(qid) {
         }
     }
     
-    // Update progress bar
     const stat = hitungStatistik();
     const progress = document.querySelector('.side-progress-bar');
     const headerStatus = document.querySelector('.side-title span:last-child');
@@ -939,10 +935,8 @@ function renderKickModal(){
   `;
 }
 
-/* Update sidebar khusus toggle checkbox tanpa rerender total (agar teks fokus tidak hilang) */
 function renderSidebarOnly(){
   render();
-  // Mengembalikan fokus ke textarea jika user mencentang ragu-ragu saat mengetik
   const ta = document.querySelector('textarea[data-action="input-answer"]');
   if(ta) ta.focus();
 }
@@ -997,7 +991,6 @@ function render(){
   else if(state.screen==='exam') html = renderExam();
   else if(state.screen==='finished') html = renderFinished();
   
-  // Tampilkan Kick Modal menimpa screen apa pun jika terpicu
   if(state.showKickModal) html += renderKickModal();
   
   app.innerHTML = html;
@@ -1010,45 +1003,38 @@ render();
    SISTEM KEAMANAN KETAT (ANTI-CHEAT)
 ================================================================ */
 function kickOutPeserta(alasan) {
-    if(state.showKickModal) return; // Mencegah trigger berulang kali
+    if(state.showKickModal) return; 
     
-    stopTimer(); // Hentikan penghitung waktu
+    stopTimer(); 
     
-    // Paksa keluar dari fullscreen jika masih menyala
     if(document.exitFullscreen && document.fullscreenElement){
         document.exitFullscreen().catch(()=>{});
     }
     
-    // Setel status modal
     state.kickReason = alasan;
     state.showKickModal = true;
     
-    render(); // Tampilkan modal peringatan berdesain rapi
+    render(); 
 }
 
-// 1. Deteksi jika peserta pindah tab atau meminimalkan browser
 document.addEventListener('visibilitychange', () => {
     if (state.screen === 'exam' && document.hidden) {
         kickOutPeserta("Berpindah tab atau meminimalkan jendela browser.");
     }
 });
 
-// 2. Deteksi jika peserta membuka aplikasi lain (kehilangan fokus)
 window.addEventListener('blur', () => {
     if (state.screen === 'exam') {
         kickOutPeserta("Membuka aplikasi lain, klik di luar area ujian, atau menggunakan *shortcut* yang tidak diizinkan.");
     }
 });
 
-// 3. Deteksi jika peserta keluar dari mode Full Screen (ESC)
 document.addEventListener('fullscreenchange', () => {
-    // Jika sedang ujian tapi elemen fullscreen tiba-tiba hilang
     if (state.screen === 'exam' && !document.fullscreenElement) {
         kickOutPeserta("Keluar dari mode Layar Penuh (Full Screen).");
     }
 });
 
-// 4. Mencegah reload halaman secara tidak sengaja
 window.addEventListener('beforeunload', (e) => {
     if (state.screen === 'exam' && !state.showKickModal) {
         e.preventDefault();
@@ -1056,7 +1042,6 @@ window.addEventListener('beforeunload', (e) => {
     }
 });
 
-// 5. Mencegah klik kanan (Inspect Element / Copy Paste)
 document.addEventListener('contextmenu', (e) => {
     if (state.screen === 'exam') {
         e.preventDefault();
