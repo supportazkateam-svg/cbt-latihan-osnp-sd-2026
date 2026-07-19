@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulasi CBT — Seleksi OSNP SD 2026</title>
+<title>Simulasi CBT — OSNP SD 2026</title>
 <style>
   :root{
     --navy-900:#081b3a;
@@ -46,8 +46,7 @@
   button{font-family:inherit;}
   ::selection{background:var(--gold-400); color:var(--navy-900);}
 
-  /* focus visibility */
-  button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
+  button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible{
     outline:3px solid var(--gold-500);
     outline-offset:2px;
   }
@@ -60,12 +59,10 @@
   .ribbon{
     background:linear-gradient(180deg,var(--navy-700),var(--navy-900));
     border-bottom:3px solid var(--gold-500);
-    color:#fff;
-    box-shadow:var(--shadow-soft);
+    color:#fff; box-shadow:var(--shadow-soft);
   }
   .ribbon-inner{
-    max-width:1180px; margin:0 auto;
-    padding:14px 22px;
+    max-width:1180px; margin:0 auto; padding:14px 22px;
     display:flex; align-items:center; gap:16px;
   }
   .ribbon-emblem{flex:0 0 auto; filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));}
@@ -75,14 +72,9 @@
     color:var(--gold-400); font-weight:700; margin:0 0 2px;
   }
   .ribbon-title{
-    font-family:var(--font-display); font-size:20px; margin:0; line-height:1.25;
-    letter-spacing:.01em;
+    font-family:var(--font-display); font-size:20px; margin:0; line-height:1.25; letter-spacing:.01em;
   }
   .ribbon-sub{margin:2px 0 0; font-size:12.5px; color:#c9d4ec;}
-  .ribbon-meta{
-    flex:0 0 auto; text-align:right; font-size:12px; color:#c9d4ec;
-    display:flex; flex-direction:column; gap:2px;
-  }
 
   /* ===================== LAYOUT WRAPPERS ===================== */
   .stage{
@@ -91,21 +83,15 @@
   }
   .stage.center{align-items:center;}
   .footer-note{
-    text-align:center; font-size:11.5px; color:var(--ink-400);
-    padding:14px 10px 22px;
+    text-align:center; font-size:11.5px; color:var(--ink-400); padding:14px 10px 22px;
   }
 
   /* ===================== CARD / PAPER ===================== */
   .card{
-    background:var(--paper);
-    border-radius:6px;
-    box-shadow:var(--shadow-card);
-    border:1px solid var(--line);
-    position:relative;
+    background:var(--paper); border-radius:6px;
+    box-shadow:var(--shadow-card); border:1px solid var(--line); position:relative;
   }
-  .card-gold-edge{
-    border-top:4px solid var(--gold-500);
-  }
+  .card-gold-edge{ border-top:4px solid var(--gold-500); }
 
   /* ===================== LOGIN SCREEN ===================== */
   .login-wrap{width:100%; max-width:460px;}
@@ -114,34 +100,21 @@
     font-size:11.5px; letter-spacing:.16em; text-transform:uppercase;
     color:var(--navy-700); font-weight:700;
   }
-  .login-head h1{
-    font-family:var(--font-display); font-size:24px; margin:6px 0 2px; color:var(--navy-900);
-  }
+  .login-head h1{ font-family:var(--font-display); font-size:24px; margin:6px 0 2px; color:var(--navy-900); }
   .login-head p{margin:0; font-size:13px; color:var(--ink-600);}
   .login-card{padding:30px 30px 26px;}
   .field{margin-bottom:16px;}
   .field label{
-    display:block; font-size:12.5px; font-weight:700; color:var(--navy-800);
-    margin-bottom:6px; letter-spacing:.01em;
+    display:block; font-size:12.5px; font-weight:700; color:var(--navy-800); margin-bottom:6px; letter-spacing:.01em;
   }
-  .field input{
+  .field input, .field select{
     width:100%; padding:11px 13px; border:1.5px solid var(--line); border-radius:4px;
-    font-size:14.5px; color:var(--ink-900); background:#fbfcfe;
-    transition:border-color .15s, box-shadow .15s;
+    font-size:14.5px; color:var(--ink-900); background:#fbfcfe; transition:border-color .15s, box-shadow .15s;
   }
-  .field input:focus{
-    outline:none; border-color:var(--navy-600); box-shadow:0 0 0 3px rgba(19,49,92,.12);
-    background:#fff;
+  .field input:focus, .field select:focus{
+    outline:none; border-color:var(--navy-600); box-shadow:0 0 0 3px rgba(19,49,92,.12); background:#fff;
   }
-  .field select{
-    width:100%; padding:11px 13px; border:1.5px solid var(--line); border-radius:4px;
-    font-size:14.5px; color:var(--ink-900); background:#fbfcfe;
-    transition:border-color .15s, box-shadow .15s; cursor:pointer;
-  }
-  .field select:focus{
-    outline:none; border-color:var(--navy-600); box-shadow:0 0 0 3px rgba(19,49,92,.12);
-    background:#fff;
-  }
+  .field select{cursor:pointer;}
   .field select option:disabled{color:var(--ink-400);}
   .field .hint{font-size:11px; color:var(--ink-400); margin-top:4px;}
   .btn{
@@ -157,21 +130,9 @@
   }
   .btn-primary:hover{background:linear-gradient(180deg,var(--navy-700),var(--navy-900));}
   .btn-primary:disabled{background:#aab3c4; cursor:not-allowed; box-shadow:none;}
-  .btn-gold{
-    background:linear-gradient(180deg,var(--gold-400),var(--gold-500));
-    color:var(--navy-900);
-  }
-  .btn-outline{
-    background:transparent; border:1.5px solid var(--line); color:var(--ink-600);
-  }
+  .btn-outline{ background:transparent; border:1.5px solid var(--line); color:var(--ink-600); }
   .btn-danger{background:linear-gradient(180deg,#c33138,var(--crimson-700)); color:#fff;}
-  .login-foot{
-    text-align:center; margin-top:16px; font-size:11.5px; color:var(--ink-400);
-  }
-  .id-line{
-    display:flex; align-items:center; gap:10px; justify-content:center; margin-top:10px;
-  }
-  .id-line .dot{width:6px;height:6px;border-radius:50%;background:var(--green-600);}
+  .login-foot{ text-align:center; margin-top:16px; font-size:11.5px; color:var(--ink-400); }
 
   /* ===================== RULES SCREEN ===================== */
   .rules-wrap{width:100%; max-width:900px; display:grid; grid-template-columns:280px 1fr; gap:22px;}
@@ -185,13 +146,9 @@
   .peserta-row:last-child{border-bottom:none;}
   .peserta-row .k{color:var(--ink-400);}
   .peserta-row .v{font-weight:700; color:var(--navy-900); text-align:right;}
-  .seal-corner{
-    position:absolute; top:-16px; right:-14px;
-  }
+  .seal-corner{ position:absolute; top:-16px; right:-14px; }
   .rules-card{padding:26px 28px; position:relative; overflow:hidden;}
-  .rules-card h2{
-    font-family:var(--font-display); font-size:19px; margin:0 0 14px; color:var(--navy-900);
-  }
+  .rules-card h2{ font-family:var(--font-display); font-size:19px; margin:0 0 14px; color:var(--navy-900); }
   .rules-card ol{margin:0 0 18px; padding-left:20px; font-size:13.5px; line-height:1.65; color:var(--ink-900);}
   .rules-card ol li{margin-bottom:8px;}
   .confirm-row{
@@ -203,8 +160,7 @@
 
   /* ===================== STAMP / SEAL ===================== */
   .stamp{
-    width:112px; height:112px; border-radius:50%;
-    border:3px double var(--crimson-600);
+    width:112px; height:112px; border-radius:50%; border:3px double var(--crimson-600);
     display:flex; align-items:center; justify-content:center; flex-direction:column;
     color:var(--crimson-600); font-family:var(--font-display); font-weight:700;
     transform:rotate(-9deg); text-align:center; line-height:1.1; letter-spacing:.03em;
@@ -223,8 +179,7 @@
   /* ===================== EXAM SCREEN ===================== */
   .exam-topbar{
     background:linear-gradient(180deg,var(--navy-700),var(--navy-900));
-    border-bottom:3px solid var(--gold-500);
-    color:#fff; position:sticky; top:0; z-index:20;
+    border-bottom:3px solid var(--gold-500); color:#fff; position:sticky; top:0; z-index:20;
   }
   .exam-topbar-inner{
     max-width:1180px; margin:0 auto; padding:10px 20px;
@@ -248,13 +203,12 @@
     padding:8px 14px; border-radius:5px; font-size:19px; letter-spacing:.05em; font-weight:700;
     box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
   }
-  .timer-label{font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--gold-400); text-align:center; margin-bottom:2px; font-family:var(--font-body);}
+  .timer-label{font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--gold-400); text-align:center; margin-bottom:2px;}
   .timer-box.warn{color:#ffb3b3; border-color:#c33138; animation:pulse 1s infinite;}
   .btn-finish{padding:9px 16px; font-size:12.5px;}
 
   .exam-body{
-    max-width:1180px; margin:0 auto; width:100%;
-    padding:22px 20px 60px;
+    max-width:1180px; margin:0 auto; width:100%; padding:22px 20px 60px;
     display:grid; grid-template-columns:1fr 300px; gap:22px; align-items:start;
   }
   @media (max-width:900px){ .exam-body{grid-template-columns:1fr;} }
@@ -270,38 +224,35 @@
   }
   .q-number{font-size:13px; color:var(--ink-400);}
   .q-number b{color:var(--navy-900);}
-  .q-text{font-size:16px; line-height:1.7; color:var(--ink-900); margin-bottom:22px;}
-  .options{display:flex; flex-direction:column; gap:10px; margin-bottom:20px;}
-  .option{
-    display:flex; align-items:flex-start; gap:12px; padding:12px 15px;
-    border:1.5px solid var(--line); border-radius:5px; cursor:pointer;
-    transition:border-color .12s, background .12s;
-    background:#fff;
+  
+  /* Question Elements */
+  .q-text{font-size:15.5px; line-height:1.75; color:var(--ink-900); margin-bottom:22px; text-align:justify;}
+  .q-image-container { text-align: center; margin: 20px 0; }
+  .q-image-container img { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px; padding: 5px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+  .q-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 14.5px;}
+  .q-table th, .q-table td { border: 1px solid var(--line); padding: 8px 12px; text-align: left; }
+  .q-table th { background-color: #fbfcfe; font-weight: bold; color:var(--navy-900);}
+  .q-instruction { font-style: italic; font-weight: bold; margin-top: 15px; display: block; color: var(--ink-600); font-size: 14px;}
+
+  /* Answer Box for Isian Singkat */
+  .q-answer-box { margin-top: 20px; background: #fbfcfe; padding: 18px; border-radius: 8px; border: 1px solid var(--line); border-left: 5px solid var(--gold-500); margin-bottom: 20px;}
+  .q-answer-box label { font-weight: 700; color: var(--navy-900); display: block; margin-bottom: 6px; font-size:14px;}
+  .q-answer-box .format-hint { font-size: 12px; color: var(--crimson-600); margin-top:0; margin-bottom: 12px; font-weight: bold; }
+  .q-answer-box textarea {
+      width: 100%; height: 90px; padding: 14px; border: 1.5px solid var(--line); border-radius: 5px; font-size: 15px; font-family: var(--font-mono); resize: vertical; transition: border .15s; background: #fff;
   }
-  .option:hover{border-color:var(--navy-600); background:#f7f9fc;}
-  .option.selected{
-    border-color:var(--gold-500); background:var(--gold-100);
-  }
-  .option .letter{
-    flex:0 0 auto; width:28px; height:28px; border-radius:50%; border:1.5px solid var(--line);
-    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;
-    color:var(--ink-600); background:#f5f7fb;
-  }
-  .option.selected .letter{background:var(--gold-500); border-color:var(--gold-500); color:var(--navy-900);}
-  .option .txt{font-size:14.5px; padding-top:4px; color:var(--ink-900); line-height:1.5;}
+  .q-answer-box textarea:focus { outline: none; border-color: var(--navy-600); box-shadow: 0 0 0 3px rgba(19,49,92,.12); }
+
   .flag-row{
     display:flex; align-items:center; gap:9px; padding:11px 14px; background:#fff8ec;
     border:1px solid var(--gold-400); border-radius:5px; font-size:13px; color:var(--navy-800);
   }
-  .flag-row input{width:16px; height:16px;}
-  .qnav{
-    display:flex; justify-content:space-between; margin-top:22px; gap:10px;
-  }
+  .flag-row input{width:16px; height:16px; cursor: pointer;}
+  .qnav{ display:flex; justify-content:space-between; margin-top:22px; gap:10px; }
 
   /* ===================== SIDEBAR NAVIGATOR ===================== */
   .side-card{padding:18px 18px 20px; position:sticky; top:86px;}
-  .side-title{font-size:12px; font-weight:700; color:var(--navy-900); letter-spacing:.03em; margin-bottom:10px;
-    display:flex; align-items:center; justify-content:space-between;}
+  .side-title{font-size:12px; font-weight:700; color:var(--navy-900); letter-spacing:.03em; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;}
   .side-progress{height:6px; background:#e7ebf3; border-radius:4px; overflow:hidden; margin-bottom:14px;}
   .side-progress-bar{height:100%; background:linear-gradient(90deg,var(--navy-600),var(--gold-500)); transition:width .25s;}
   .legend{display:flex; flex-wrap:wrap; gap:8px; font-size:10.5px; color:var(--ink-600); margin-bottom:14px;}
@@ -313,7 +264,7 @@
   .num-btn{
     aspect-ratio:1/1; border-radius:4px; border:1.5px solid var(--line); background:#fff;
     font-size:12.5px; font-weight:700; color:var(--ink-600); cursor:pointer; position:relative;
-    display:flex; align-items:center; justify-content:center;
+    display:flex; align-items:center; justify-content:center; padding:0;
   }
   .num-btn.answered{background:var(--navy-700); border-color:var(--navy-700); color:#fff;}
   .num-btn.flagged::after{
@@ -371,34 +322,145 @@
    KONFIGURASI UJIAN
 ================================================================ */
 const EXAM_CONFIG = {
-  namaLembaga: "Panitia AzkaTeam - Seleksi OSNP SD 2026",
+  namaLembaga: "Panitia Seleksi OSNP Sekolah Dasar",
   namaUjian: "Seleksi OSNP SD 2026",
   tahap: "Simulasi Tryout — Tahap Provinsi",
-  durasiMenit: 90
+  durasiMenit: 60
 };
 
-/* ================================================================
-   BANK SOAL
-   ----------------------------------------------------------------
-   Ini adalah tempat menaruh soal. Soal di bawah ini HANYA CONTOH
-   agar tampilan sistem dapat langsung dicoba. Silakan ganti/ tambah
-   isi array BANK_SOAL dengan soal asli begitu tersedia.
+const formatInstruction = `<span class="q-instruction">(Jawablah pertanyaan tersebut dengan format: (A) ................ ; (B) ................ sesuai dengan urutan huruf pertanyaan, dengan pemisah antar jawaban menggunakan tanda titik koma (;))</span>`;
 
-   Format setiap soal:
-   {
-     id      : nomor urut (integer, unik, mulai dari 1),
-     subtes  : nama mata pelajaran/subtes,
-     teks    : teks pertanyaan,
-     pilihan : { A:"...", B:"...", C:"...", D:"..." }
-   }
+/* ================================================================
+   BANK SOAL (20 Soal - Paket 1 Prediksi OSNP IPA SD)
 ================================================================ */
 const BANK_SOAL = [
-  { id:1, subtes:"Makhluk Hidup", teks:"(Contoh) Proses tumbuhan membuat makanannya sendiri dengan bantuan cahaya matahari disebut ...", pilihan:{A:"Respirasi",B:"Fotosintesis",C:"Fermentasi",D:"Transpirasi"} },
-  { id:2, subtes:"Makhluk Hidup", teks:"(Contoh) Hewan yang mengalami metamorfosis sempurna adalah ...", pilihan:{A:"Kupu-kupu",B:"Belalang",C:"Kecoa",D:"Capung"} },
-  { id:3, subtes:"Energi dan Perubahannya", teks:"(Contoh) Berikut ini yang termasuk sumber energi tidak dapat diperbarui adalah ...", pilihan:{A:"Cahaya matahari",B:"Angin",C:"Batu bara",D:"Air terjun"} },
-  { id:4, subtes:"Energi dan Perubahannya", teks:"(Contoh) Perubahan energi yang terjadi pada setrika listrik saat digunakan adalah dari energi listrik menjadi energi ...", pilihan:{A:"Gerak",B:"Cahaya",C:"Panas",D:"Bunyi"} },
-  { id:5, subtes:"Bumi dan Alam Semesta", teks:"(Contoh) Peristiwa berputarnya Bumi pada porosnya disebut ...", pilihan:{A:"Revolusi Bumi",B:"Rotasi Bumi",C:"Gerhana Bumi",D:"Presesi Bumi"} },
-  { id:6, subtes:"Bumi dan Alam Semesta", teks:"(Contoh) Alat yang digunakan untuk mengukur suhu udara disebut ...", pilihan:{A:"Barometer",B:"Termometer",C:"Higrometer",D:"Anemometer"} }
+    { 
+        id: 1, subtes: "IPA - Paket 1",
+        teks: `Perhatikan komponen jaring-jaring makanan pada ekosistem laut dalam berikut.<br>
+                <div class="q-image-container"><img src="gambar-soal-1.jpg" alt="[Gambar Jaring Makanan Ekosistem Laut]"></div>
+                Fitoplankton berperan sebagai produsen tunggal yang dimakan oleh zooplankton dan udang kecil. Zooplankton menjadi sumber makanan bagi ikan kecil dan ubur-ubur. Udang kecil dimakan oleh ikan kecil dan ikan besar. Selanjutnya, ubur-ubur dimakan oleh ikan besar. Ikan kecil menjadi mangsa bagi ikan besar dan burung laut. Di ujung jaring-jaring makanan, ikan besar dan burung laut menjadi mangsa utama bagi hiu.<br><br>
+                Berdasarkan struktur jaring-jaring makanan tersebut, nilai dari selisih jumlah seluruh rantai makanan yang ada dengan jumlah organisme yang menempati tingkatan sebagai konsumen tingkat II (konsumen sekunder) adalah <b>...(A)...</b>, sementara jumlah organisme yang dapat bertindak sebagai konsumen puncak adalah <b>...(B)...</b><br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 2, subtes: "IPA - Paket 1",
+        teks: `Ketika kulit tergores oleh benda tajam, bakteri berpotensi masuk ke dalam jaringan tubuh bawah kulit. Sebagai respons cepat, sel tiang (<i>mast cell</i>) di area cedera melepaskan molekul sinyal kimia berupa histamin yang menyebabkan pelebaran pembuluh darah lokal (vasodilatasi) dan peningkatan permeabilitas kapiler darah. Efek ini memicu timbulnya tanda klinis berupa kemerahan, rasa panas, pembengkakan, dan rasa nyeri. Mekanisme pertahanan non-spesifik lapis kedua ini dikenal dengan istilah <b>...(A)...</b>, yang berfungsi untuk memobilisasi sel darah putih jenis <b>...(B)...</b> menuju lokasi infeksi untuk memfagositosis bakteri.<br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 3, subtes: "IPA - Paket 1",
+        teks: `Perpindahan materi di alam melibatkan senyawa esensial yang mengalami perubahan wujud secara fisik. Proses penguapan air yang berasal dari jaringan makhluk hidup, khususnya melalui stomata daun tumbuhan akibat panas matahari dinamakan <b>...(A)...</b>, sedangkan proses perubahan wujud uap air di atmosfer menjadi partikel titik-titik air karena penurunan suhu udara membentuk awan dinamakan <b>...(B)...</b><br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 4, subtes: "IPA - Paket 1",
+        teks: `Pada tumbuhan yang hidup di lingkungan kering dan gersang (xerofit), adaptasi metabolisme fotosintesis dilakukan dengan cara memisahkan waktu penangkapan gas karbon dioksida berdasarkan waktu siang dan malam. Penyerapan karbon dioksida dilakukan pada malam hari saat suhu udara rendah, lalu disimpan di dalam vakuola sel dalam bentuk asam malat. Jalur metabolisme khusus ini dinamakan tipe tumbuhan <b>...(A)...</b>, di mana pada siang hari asam organik tersebut akan dipecah kembali untuk melepaskan karbon dioksida menuju kloroplas guna menjalankan jalur asimilasi karbon dengan kondisi stomata dalam keadaan <b>...(B)...</b><br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 5, subtes: "IPA - Paket 1",
+        teks: `Perkembangan serangga tidak hanya melibatkan perubahan bentuk, tetapi juga proses pergantian kulit luar secara periodik untuk memfasilitasi pertambahan ukuran tubuh yang terhambat oleh eksoskeleton kaku. Proses pelepasan eksoskeleton lama tersebut dikenal dengan istilah <b>...(A)...</b>, sedangkan bentuk tubuh atau fase perkembangan serangga di antara dua proses pergantian kulit yang berurutan disebut dengan <b>...(B)...</b><br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 6, subtes: "IPA - Paket 1",
+        teks: `Kelelawar (<i>Pteropus sp.</i>) dan Paus Biru (<i>Balaenoptera musculus</i>) merupakan dua fauna yang memiliki habitat dan adaptasi lokomosi (alat gerak) yang bertolak belakang, di mana satu spesies mampu terbang di udara dan spesies lainnya berenang di lautan. Walaupun morfologi luarnya berbeda jauh, keduanya memiliki kedekatan evolusioner yang erat dan dimasukkan ke dalam Kelas <b>...(A)...</b> karena sama-sama memiliki kelenjar susu dan berambut. Kedua hewan ini memproduksi panas internal dalam jumlah besar dari laju perombakan zat makanan yang konstan untuk mempertahankan kestabilan suhu tubuhnya pada rentang yang optimal, sehingga dikategorikan sebagai organisme <b>...(B)...</b><br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 7, subtes: "IPA - Paket 1",
+        teks: `Tabel berikut menunjukkan beberapa hewan mamalia khas dari berbagai pulau di Indonesia beserta tipe makanannya:
+                <table class="q-table">
+                    <tr><th>Pulau</th><th>Hewan</th></tr>
+                    <tr><td>Sumatera</td><td>Harimau Sumatera</td></tr>
+                    <tr><td>Jawa</td><td>Macan Tutul Jawa</td></tr>
+                    <tr><td>Sulawesi</td><td>Anoa Dataran Rendah</td></tr>
+                    <tr><td>Kalimantan</td><td>Bekantan</td></tr>
+                </table>
+                Spesies Harimau Sumatera dan Macan Tutul Jawa menunjukkan hubungan kekerabatan yang dekat karena keduanya dimasukkan ke dalam Familia <b>...(A)...</b>. Berdasarkan letak garis biogeografi Wallace, hewan Anoa dan Bekantan pada tabel di atas berturut-turut merupakan fauna khas yang menempati zona <b>...(B)...</b><br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 8, subtes: "IPA - Paket 1",
+        teks: `Perhatikan karakteristik dua jenis daun tumbuhan berikut.<br>
+                <div class="q-image-container"><img src="gambar-soal-8.jpg" alt="[Gambar Daun Jagung (P) dan Daun Singkong (Q)]"></div>
+                Daun P (daun jagung) memiliki pelepah daun yang memeluk batang dengan tulang daun utama di tengah yang diapit oleh urat-urat daun lurus membujur searah menuju satu titik di ujung helai daun. Daun Q (daun singkong) memiliki sehelai daun lebar yang terbagi menjadi beberapa lekukan dalam dengan beberapa tulang daun utama yang memancar keluar dari satu titik pangkal tangkai daun secara bersamaan.<br><br>
+                Berdasarkan struktur fisiknya, Daun Q memiliki tipe pertulangan daun <b>...(A)...</b>, sedangkan Daun P dikategorikan sebagai organ dari kelompok tumbuhan yang memiliki sistem perakaran <b>...(B)...</b><br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 9, subtes: "IPA - Paket 1",
+        teks: `Perhatikan gambar berikut!<br>
+                <div class="q-image-container"><img src="gambar-soal-9.jpg" alt="[Grafik sistem ekskresi, otak, dan urine]"></div>
+                Grafik pemantauan pengeluaran cairan tubuh menunjukkan bahwa saat seseorang mengalami dehidrasi atau kekurangan cairan setelah beraktivitas berat di cuaca terik, volume urinenya menjadi sangat sedikit. Fenomena ini dikendalikan oleh sistem saraf pusat melalui hipotalamus yang merangsang kelenjar hipofisis untuk melepaskan suatu hormon ke dalam darah menuju ginjal guna meningkatkan penyerapan kembali (reabsorpsi) air. Hormon yang berperan menekan volume urine tersebut adalah <b>...(A)...</b>, dan akibat dari tingginya kadar hormon tersebut di dalam darah membuat konsentrasi atau tingkat kepekatan urine yang dikeluarkan menjadi <b>...(B)...</b><br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 10, subtes: "IPA - Paket 1",
+        teks: `Saat berkemah di kawasan pegunungan yang bersuhu sangat dingin, Andi memperhatikan bahwa ia menjadi lebih sering buang air kecil (mikturisi) dibanding saat berada di dataran rendah yang hangat. Fenomena meningkatnya produksi urine ini terjadi karena pembuluh darah di kulit menyempit untuk mengurangi kehilangan panas, yang menyebabkan tekanan darah di organ dalam meningkat. Sebagai respons keseimbangan, tubuh menekan pengeluaran hormon antidiuretik (ADH) agar kelebihan cairan dapat dikeluarkan lewat ginjal. Peristiwa perubahan volume produksi urine akibat adaptasi suhu lingkungan ini diatur secara hormonal oleh kelenjar <b>...(A)...</b>, dan bertujuan untuk menjaga keseimbangan cairan tubuh yang dikenal dengan istilah <b>...(B)...</b><br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 11, subtes: "IPA - Paket 1",
+        teks: `Dalam sebuah eksperimen laboratorium ekologi, sekelompok tikus kangguru (<i>Dipodomys merriami</i>) ditempatkan di dalam kandang simulasi kering tanpa akses air minum sama sekali selama beberapa minggu. Hewan pengerat ini hanya diberikan makanan berupa biji-bijian kering. Hasil pemantauan menunjukkan tikus-tikus tersebut tetap terhidrasi dengan baik, memproduksi urine yang sangat pekat dengan volume minimal, dan feses yang hampir sepenuhnya kering. Di samping itu, mereka hanya aktif bergerak di dalam lorong bawah tanah pada malam hari. Kemampuan ginjal tikus kangguru menghasilkan urine yang sangat pekat merupakan bentuk adaptasi <b>...(A)...</b>. Sementara itu, aktivitas mencari makan yang hanya dilakukan pada malam hari (nokturnal) berfungsi untuk <b>...(B)...</b><br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 12, subtes: "IPA - Paket 1",
+        teks: `Rian mengamati proses pembuatan tapai ketan yang dilakukan oleh neneknya. Beras ketan yang telah dikukus dan didinginkan ditaburi dengan ragi tapai secara merata, kemudian dibungkus rapat menggunakan daun pisang. Nenek menjelaskan bahwa salah satu mikroorganisme utama di dalam ragi tapai tersebut adalah jamur multiseluler <i>Amylomyces rouxii</i> yang termasuk ke dalam kelompok Kingdom <b>...(A)...</b>. Setelah disimpan selama tiga hari, bungkusan tapai tersebut mengeluarkan aroma harum yang khas, berair, terasa manis, dan memicu sensasi sedikit menyengat di tenggorokan karena terbentuknya senyawa kimia berupa <b>...(B)...</b> dari hasil perombakan karbohidrat.<br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 13, subtes: "IPA - Paket 1",
+        teks: `Sinta sering sekali merasakan lemas, pusing yang hebat, dan wajahnya terlihat sangat pucat saat beraktivitas di sekolah. Hasil pemeriksaan laboratorium menunjukkan bahwa kadar hemoglobin (Hb) di dalam tubuhnya berada jauh di bawah ambang batas normal akibat menderita anemia aplastik stadium lanjut, di mana tubuhnya berhenti memproduksi sel darah baru dalam jumlah memadai. Dokter memutuskan untuk melakukan prosedur mutakhir berupa transplantasi sel punca hematopoietik (<i>hematopoietic stem cell transplantation</i>) dari donor yang cocok agar sistem peredaran darah Sinta dapat pulih kembali.<br><br>
+                Jenis sel darah utama yang mengalami penurunan drastis sehingga menyebabkan tubuh Sinta kekurangan hemoglobin dan pasokan oksigen ke jaringan adalah sel <b>...(A)...</b>. Intervensi medis berupa penanaman sel punca donor tersebut disuntikkan langsung menuju tempat asal mula pembentukan sel darah merah ini di dalam tubuh manusia, yaitu <b>...(B)...</b><br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 14, subtes: "IPA - Paket 1",
+        teks: `Perhatikan studi kasus berikut!<br>
+                <div class="q-image-container"><img src="gambar-soal-14.jpg" alt="[Gambar Anggrek Kantung dan Lebah]"></div>
+                Anggrek kantung raksasa (<i>Cypripedium calceolus</i>) memiliki struktur labellum (bibir bunga) yang termodifikasi membentuk kantung dalam yang licin dan berisi sedikit cairan penjebak. Ketika lebah soliter dari genus <i>Andrena</i> mendarat di tepi kantung, lebah tersebut sering kali tergelincir jatuh ke bagian dasar kantung. Satu-satunya jalan keluar bagi lebah adalah merayap naik melalui saluran sempit di bagian belakang bunga, yang memaksanya menempelkan punggungnya pada organ reproduksi tanaman untuk mengambil atau menaruh serbuk sari.<br><br>
+                Lebah soliter yang bertindak sebagai pollinator unik tersebut termasuk dalam kelompok hewan Avertebrata dari Kelas <b>...(A)...</b>. Hubungan ekologi yang terjadi di mana lebah terjebak dan bersusah payah keluar tanpa mendapatkan nektar atau madu sama sekali, sedangkan tanaman anggur diuntungkan karena berhasil diserbuki dinamakan interaksi <b>...(B)...</b><br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 15, subtes: "IPA - Paket 1",
+        teks: `Perhatikan grafik berikut!<br>
+                <div class="q-image-container"><img src="gambar-soal-15.jpg" alt="[Grafik Kadar Glukosa Darah]"></div>
+                Dalam sebuah eksperimen klinis, seorang sukarelawan sehat diminta meminum larutan glukosa pekat setelah berpuasa selama 8 jam. Grafik memantau fluktuasi kadar glukosa darah dan kadar dua hormon utama pankreas secara simultan setiap 15 menit. Berdasarkan grafik hasil pemantauan, kadar glukosa darah melonjak drastis dan mencapai titik puncak tertingginya pada menit ke-<b>...(A)...</b>. Kenaikan glukosa darah ini merangsang respons hormonal secara instan. Pada fase penurunan kembali kadar gula darah menuju kondisi homeostasis normal, grafik menunjukkan bahwa hal tersebut dikendalikan oleh peningkatan sekresi hormon <b>...(B)...</b> secara masif ke dalam aliran darah.<br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 16, subtes: "IPA - Paket 1",
+        teks: `Dua buah benda berupa balok kayu murni, yaitu Balok X dengan massa 3 kg dan Balok Y dengan massa 2 kg, diletakkan berhimpitan di atas lantai mendatar yang licin tanpa gesekan. Sebuah gaya dorong horizontal <i>F</i> sebesar 15 N diberikan secara konstan.<br>
+                <div class="q-image-container"><img src="gambar-soal-16.jpg" alt="[Gambar Gaya Dorong Balok X dan Y]"></div>
+                Jika gaya <i>F</i> mendorong Balok X ke arah kanan sehingga mendorong Balok Y, maka besar gaya kontak antara Balok X dan Balok Y adalah <b>...(A)...</b> Newton. Namun, jika gaya <i>F</i> dipindahkan untuk mendorong Balok Y ke arah kiri sehingga mendorong Balok X, maka besar gaya kontak antara kedua balok tersebut menjadi <b>...(B)...</b> Newton.<br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 17, subtes: "IPA - Paket 1",
+        teks: `Perhatikan gambar berikut!<br>
+                <div class="q-image-container"><img src="gambar-soal-17.jpg" alt="[Gambar Balok pada Bidang Miring]"></div>
+                Dalam sebuah uji coba laboratorium fisika, sebuah balok kayu bermassa 1 kg (Balok X) dan sebuah balok kayu bermassa 3 kg (Balok Y) yang memiliki jenis permukaan bawah yang sama persis secara bergantian diletakkan di puncak sebuah bidang miring setinggi 50 cm. Kedua balok dilepaskan dari keadaan diam hingga meluncur turun menuju lantai permukaan semen yang kasar dan luas.<br><br>
+                Balok yang memiliki kecepatan lebih besar saat tepat menyentuh dasar lantai semen adalah <b>...(A)...</b>, sedangkan balok yang mampu meluncur dengan jarak pengereman paling jauh di atas lantai semen sebelum akhirnya berhenti adalah <b>...(B)...</b><br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 18, subtes: "IPA - Paket 1",
+        teks: `Sebuah tim konstruksi cilik melakukan simulasi pengangkatan material semen bermassa 20 kg setinggi 3 meter. Tim pertama menggunakan katrol bebas (katrol bergerak tunggal) untuk mengerek beban tersebut secara vertikal, sedangkan tim kedua memilih menggunakan sistem katrol majemuk yang memiliki 4 tali penyangga beban fungsional. Berdasarkan spesifikasi mekanis kedua jenis alat tersebut, tim <b>...(A)...</b> akan menarik tali penarik dengan jarak total helaan tali yang jauh lebih panjang untuk mencapai ketinggian target. Di sisi lain, tim <b>...(B)...</b> akan mengerahkan gaya tarik kuasa yang jauh lebih besar saat proses pengangkatan beban berlangsung.<br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 19, subtes: "IPA - Paket 1",
+        teks: `Cahaya matahari yang sampai ke bumi memainkan peran vital dalam mendukung fotosintesis tumbuhan dan menghangatkan planet. Berdasarkan rentang frekuensi atau panjang gelombangnya di dalam spektrum fisis, cahaya yang dapat diurai oleh prisma kaca menjadi warna pelangi dikelompokkan sebagai gelombang <b>...(A)...</b>. Sementara itu, berdasarkan karakteristik arah rambat energinya yang tegak lurus terhadap arah getar medan listrik dan medan magnetnya, cahaya diklasifikasikan sebagai gelombang <b>...(B)...</b><br>
+                ${formatInstruction}`
+    },
+    { 
+        id: 20, subtes: "IPA - Paket 1",
+        teks: `Evi berjalan di area parkir swalayan dan melihat sebuah cermin cembung besar (cermin tikungan) yang dipasang di sudut dinding. Ketika ia berdiri cukup jauh, ia melihat bayangan dirinya di dalam cermin tersebut terlihat sangat kecil namun areanya sangat luas, sehingga ia bisa melihat banyak mobil di belakangnya. Kaca spion dan cermin tikungan memanfaatkan cermin cembung karena sifat bayangannya yang selalu <b>...(A)...</b>. Alasan utama pemasangan cermin berpermukaan melengkung keluar ini pada kendaraan atau tikungan jalan adalah untuk mendapatkan bidang pandang yang <b>...(B)...</b><br>
+                ${formatInstruction}`
+    }
 ];
 
 /* ================================================================
@@ -419,11 +481,11 @@ function emblemSVG(size){
    STATE
 ================================================================ */
 const state = {
-  screen: 'login',           // login | rules | exam | finished
-  peserta: { nama:'', kelas:'', sekolah:'', bidang:'IPA' },
+  screen: 'login',           
+  peserta: { nama:'', kelas:'', sekolah:'', bidang:'IPA', paket:'' },
   currentIndex: 0,
-  jawaban: {},                // { soalId: 'A'|'B'|'C'|'D' }
-  raguRagu: {},                // { soalId: true }
+  jawaban: {},                // Menyimpan teks dari textarea
+  raguRagu: {},               // { soalId: true }
   sisaDetik: EXAM_CONFIG.durasiMenit * 60,
   timerHandle: null,
   waktuMulai: null,
@@ -438,13 +500,15 @@ const app = document.getElementById('app');
    HELPERS
 ================================================================ */
 function formatWaktu(detik){
-  const m = Math.floor(detik/60).toString().padStart(2,'0');
+  const h = Math.floor(detik/3600).toString().padStart(2,'0');
+  const m = Math.floor((detik%3600)/60).toString().padStart(2,'0');
   const s = Math.floor(detik%60).toString().padStart(2,'0');
-  return m+':'+s;
+  return h+':'+m+':'+s; // Format Jam:Menit:Detik karena durasi 60 menit
 }
 function hitungStatistik(){
   const total = BANK_SOAL.length;
-  const dijawab = Object.keys(state.jawaban).length;
+  // Soal dianggap dijawab jika textareanya tidak kosong (setelah di-trim)
+  const dijawab = Object.keys(state.jawaban).filter(k => state.jawaban[k].trim().length > 0).length;
   const ragu = Object.keys(state.raguRagu).filter(k=>state.raguRagu[k]).length;
   return { total, dijawab, belum: total-dijawab, ragu };
 }
@@ -457,7 +521,7 @@ function groupBySubtes(){
   return map;
 }
 function bidangLabel(code){
-  const map = { IPA:'IPA (Ilmu Pengetahuan Alam)', MTK:'Matematika', IPS:'IPS', BIN:'Bahasa Indonesia' };
+  const map = { IPA:'IPA (Ilmu Pengetahuan Alam)', MTK:'Matematika', IPS:'IPS' };
   return map[code] || code;
 }
 function showToast(msg){
@@ -494,7 +558,7 @@ function updateTimerDisplay(){
 }
 
 /* ================================================================
-   EVENT DELEGATION
+   EVENT DELEGATION (Click & Input)
 ================================================================ */
 app.addEventListener('click', (e)=>{
   const t = e.target.closest('[data-action]');
@@ -502,12 +566,10 @@ app.addEventListener('click', (e)=>{
   const action = t.dataset.action;
 
   if(action==='login') doLogin();
-  else if(action==='accept-rules') { /* handled via checkbox change */ }
   else if(action==='start-exam') startExam();
   else if(action==='go-prev') goTo(state.currentIndex-1);
   else if(action==='go-next') goTo(state.currentIndex+1);
   else if(action==='jump'){ goTo(parseInt(t.dataset.idx,10)); }
-  else if(action==='select-option'){ selectAnswer(t.dataset.qid, t.dataset.letter); }
   else if(action==='open-finish') { state.showFinishModal = true; render(); }
   else if(action==='cancel-finish') { state.showFinishModal = false; render(); }
   else if(action==='confirm-finish') { finishExam(false); }
@@ -525,6 +587,37 @@ app.addEventListener('change', (e)=>{
   }
 });
 
+// Auto-save untuk Isian Singkat
+app.addEventListener('input', (e)=>{
+    const t = e.target;
+    if(t.dataset && t.dataset.action==='input-answer'){
+        state.jawaban[t.dataset.qid] = t.value;
+        // Update tampilan sidebar (warna grid biru) secara live tanpa render ulang seluruh exam
+        updateSidebarVisuals(t.dataset.qid);
+    }
+});
+
+function updateSidebarVisuals(qid) {
+    const soalIndex = BANK_SOAL.findIndex(s => s.id == qid);
+    if(soalIndex === -1) return;
+    
+    const btn = document.querySelector(`.num-btn[data-idx="${soalIndex}"]`);
+    if(btn) {
+        if(state.jawaban[qid] && state.jawaban[qid].trim().length > 0) {
+            btn.classList.add('answered');
+        } else {
+            btn.classList.remove('answered');
+        }
+    }
+    
+    // Update progress bar
+    const stat = hitungStatistik();
+    const progress = document.querySelector('.side-progress-bar');
+    const headerStatus = document.querySelector('.side-title span:last-child');
+    if(progress) progress.style.width = `${(stat.dijawab/stat.total*100)||0}%`;
+    if(headerStatus) headerStatus.textContent = `${stat.dijawab}/${stat.total}`;
+}
+
 /* ================================================================
    FLOW HANDLERS
 ================================================================ */
@@ -533,12 +626,13 @@ function doLogin(){
   const kelas = document.getElementById('inKelas').value;
   const sekolah = document.getElementById('inSekolah').value.trim();
   const bidang = document.getElementById('inBidang').value;
+  const paket = document.getElementById('inPaket').value;
 
-  if(!nama || !kelas || !sekolah || !bidang){
+  if(!nama || !kelas || !sekolah || !bidang || !paket){
     showToast('Mohon lengkapi seluruh isian sebelum melanjutkan.');
     return;
   }
-  state.peserta = { nama, kelas, sekolah, bidang };
+  state.peserta = { nama, kelas, sekolah, bidang, paket };
   state.screen = 'rules';
   render();
 }
@@ -561,11 +655,6 @@ function goTo(idx){
   render();
 }
 
-function selectAnswer(qid, letter){
-  state.jawaban[qid] = letter;
-  render();
-}
-
 function finishExam(autoBySystem){
   stopTimer();
   state.showFinishModal = false;
@@ -578,7 +667,7 @@ function finishExam(autoBySystem){
   render();
 }
 
-/* Anti-cheat visual cue (demo) */
+/* Anti-cheat visual cue */
 document.addEventListener('visibilitychange', ()=>{
   if(state.screen==='exam' && document.hidden){
     state.warnCount++;
@@ -612,39 +701,44 @@ function renderLogin(){
     <div class="login-wrap">
       <div class="login-head">
         <p class="kicker">Sistem Ujian Berbasis Komputer</p>
-        <h1>Masuk ke Sesi Tryout</h1>
-        <p>Silakan lengkapi data berikut sesuai kartu peserta Anda.</p>
+        <h1>Masuk ke Sesi Ujian</h1>
+        <p>Silakan lengkapi data berikut sesuai instruksi pengawas.</p>
       </div>
       <div class="card card-gold-edge login-card">
         <div class="field">
           <label for="inNama">Nama Lengkap</label>
           <input id="inNama" type="text" placeholder="Tulis nama lengkap" autocomplete="off">
         </div>
-        <div class="field">
-          <label for="inKelas">Kelas</label>
-          <select id="inKelas">
-            <option value="" disabled selected>Pilih kelas</option>
-            <option value="4">Kelas 4</option>
-            <option value="5">Kelas 5</option>
-            <option value="6">Kelas 6</option>
-          </select>
+        <div class="field" style="display:flex; gap:16px;">
+            <div style="flex:1;">
+                <label for="inKelas">Kelas</label>
+                <select id="inKelas">
+                    <option value="" disabled selected>Pilih kelas</option>
+                    <option value="4">Kelas 4</option>
+                    <option value="5">Kelas 5</option>
+                    <option value="6">Kelas 6</option>
+                </select>
+            </div>
+            <div style="flex:2;">
+                <label for="inBidang">Bidang yang Diikuti</label>
+                <select id="inBidang">
+                    <option value="IPA" selected>IPA (Ilmu Pengetahuan Alam)</option>
+                    <option value="MTK" disabled>Matematika — Segera Menyusul</option>
+                    <option value="IPS" disabled>IPS — Segera Menyusul</option>
+                </select>
+            </div>
         </div>
         <div class="field">
           <label for="inSekolah">Asal Sekolah</label>
-          <input id="inSekolah" type="text" placeholder="Nama sekolah asal" autocomplete="off">
+          <input id="inSekolah" type="text" placeholder="Contoh: SDN 1 Nusantara" autocomplete="off">
         </div>
         <div class="field">
-          <label for="inBidang">Bidang yang Diikuti</label>
-          <select id="inBidang">
-            <option value="IPA">IPA (Ilmu Pengetahuan Alam)</option>
-            <option value="MTK" disabled>Matematika — Segera Hadir</option>
-            <option value="IPS" disabled>IPS — Segera Hadir</option>
-            <option value="BIN" disabled>Bahasa Indonesia — Segera Hadir</option>
+          <label for="inPaket">Pilih Paket Soal</label>
+          <select id="inPaket">
+            <option value="Paket 1 - Prediksi Soal OSNP IPA SD 2026">Paket 1 - Prediksi Soal OSNP IPA SD 2026</option>
           </select>
-          <p class="hint">Saat ini tryout baru tersedia untuk bidang IPA.</p>
         </div>
-        <button class="btn btn-primary" data-action="login">Masuk</button>
-        <div class="id-line"><span class="dot"></span> Sesi Latihan Mandiri</div>
+        <button class="btn btn-primary" data-action="login" style="margin-top:10px;">Lanjutkan</button>
       </div>
       <p class="login-foot">Ini merupakan sistem simulasi/tryout untuk latihan menghadapi ${EXAM_CONFIG.namaUjian}.</p>
     </div>
@@ -681,25 +775,25 @@ function renderRules(){
         <div class="peserta-row"><span class="k">Kelas</span><span class="v">Kelas ${p.kelas}</span></div>
         <div class="peserta-row"><span class="k">Asal Sekolah</span><span class="v">${p.sekolah}</span></div>
         <div class="peserta-row"><span class="k">Bidang</span><span class="v">${bidangLabel(p.bidang)}</span></div>
-        <div class="peserta-row"><span class="k">Jumlah Soal</span><span class="v">${BANK_SOAL.length} Soal</span></div>
-        <div class="peserta-row"><span class="k">Durasi</span><span class="v">${EXAM_CONFIG.durasiMenit} Menit</span></div>
+        <div class="peserta-row"><span class="k">Paket</span><span class="v" style="font-size:11.5px;">${p.paket}</span></div>
+        <div class="peserta-row"><span class="k">Jumlah Soal</span><span class="v">${BANK_SOAL.length} Soal (Isian)</span></div>
+        <div class="peserta-row"><span class="k">Durasi</span><span class="v">${EXAM_CONFIG.durasiMenit} Menit (1 Jam)</span></div>
       </div>
 
       <div class="card rules-card">
-        <h2>Tata Tertib Peserta</h2>
+        <h2>Tata Tertib Ujian Isian Singkat</h2>
         <ol>
-          <li>Pastikan koneksi internet stabil selama sesi ujian berlangsung.</li>
-          <li>Peserta dilarang membuka aplikasi, tab, atau jendela lain selama ujian berlangsung.</li>
-          <li>Waktu pengerjaan akan berjalan otomatis dan tidak dapat dihentikan setelah dimulai.</li>
-          <li>Jawaban tersimpan otomatis setiap kali peserta memilih opsi jawaban.</li>
-          <li>Peserta dapat menandai soal yang masih ragu untuk ditinjau kembali sebelum waktu berakhir.</li>
-          <li>Ujian akan berakhir otomatis apabila waktu telah habis.</li>
-          <li>Peserta wajib menekan tombol "Selesai Ujian" setelah seluruh soal dikerjakan.</li>
-          <li>Segala bentuk kecurangan akan mengakibatkan diskualifikasi dari seleksi.</li>
+          <li>Waktu pengerjaan adalah <b>60 Menit</b> dan akan berjalan otomatis.</li>
+          <li>Seluruh soal berbentuk Isian Rumpang / Isian Singkat.</li>
+          <li><b>WAJIB</b> menjawab pertanyaan dengan format yang telah disediakan: <br><strong style="color:var(--crimson-700); background:#fcf0f0; padding:2px 6px; border-radius:4px;">*(A) [jawaban Anda] ; (B) [jawaban Anda]*</strong> sesuai dengan urutan huruf pertanyaan.</li>
+          <li>Gunakan titik koma (;) sebagai pemisah antar jawaban.</li>
+          <li>Jawaban Anda akan tersimpan secara otomatis setiap kali Anda mengetik di kolom jawaban yang disediakan.</li>
+          <li>Peserta dapat menekan tombol "Ragu-ragu" untuk menandai nomor soal yang ingin ditinjau kembali.</li>
+          <li>Segala bentuk kecurangan akan mengakibatkan diskualifikasi.</li>
         </ol>
         <div class="confirm-row">
           <input type="checkbox" id="acceptCheckbox">
-          <label for="acceptCheckbox">Saya telah membaca, memahami, dan bersedia mematuhi tata tertib ujian di atas.</label>
+          <label for="acceptCheckbox">Saya telah membaca, memahami instruksi format jawaban, dan bersedia mematuhi tata tertib di atas.</label>
         </div>
         <button class="btn btn-primary" data-action="start-exam" disabled style="width:auto; padding:12px 26px;">Mulai Mengerjakan Soal</button>
       </div>
@@ -718,25 +812,18 @@ function renderExam(){
   const grouped = groupBySubtes();
   const isFirst = state.currentIndex===0;
   const isLast = state.currentIndex===BANK_SOAL.length-1;
-  const selected = state.jawaban[soal.id];
+  const currentAnswer = state.jawaban[soal.id] || '';
   const flagged = !!state.raguRagu[soal.id];
-
-  const optionsHTML = Object.entries(soal.pilihan).map(([letter,txt])=>`
-    <div class="option ${selected===letter?'selected':''}" data-action="select-option" data-qid="${soal.id}" data-letter="${letter}" role="button" tabindex="0">
-      <span class="letter">${letter}</span>
-      <span class="txt">${txt}</span>
-    </div>
-  `).join('');
 
   const sidebarHTML = Object.entries(grouped).map(([subj,items])=>`
     <div class="subj-group">
       <div class="label">${subj}</div>
       <div class="num-grid">
         ${items.map(it=>{
-          const answered = state.jawaban[it.id]!==undefined;
+          const isAnswered = state.jawaban[it.id] && state.jawaban[it.id].trim().length > 0;
           const isFlag = !!state.raguRagu[it.id];
           const isCurrent = it.idx===state.currentIndex;
-          return `<button class="num-btn ${answered?'answered':''} ${isFlag?'flagged':''} ${isCurrent?'current':''}" data-action="jump" data-idx="${it.idx}">${it.idx+1}</button>`;
+          return `<button class="num-btn ${isAnswered?'answered':''} ${isFlag?'flagged':''} ${isCurrent?'current':''}" data-action="jump" data-idx="${it.idx}">${it.idx+1}</button>`;
         }).join('')}
       </div>
     </div>
@@ -773,14 +860,20 @@ function renderExam(){
         <span class="q-number">Soal <b>${state.currentIndex+1}</b> dari ${BANK_SOAL.length}</span>
       </div>
       <div class="q-text">${soal.teks}</div>
-      <div class="options">${optionsHTML}</div>
+      
+      <div class="q-answer-box">
+          <label>Ketikan Jawaban Anda di Bawah Ini:</label>
+          <p class="format-hint">*Gunakan format wajib dengan tanda kurung dan titik koma.</p>
+          <textarea data-action="input-answer" data-qid="${soal.id}" placeholder="*(A) Jawaban Anda ; (B) Jawaban Anda*">${currentAnswer}</textarea>
+      </div>
+
       <div class="flag-row">
         <input type="checkbox" id="flag-${soal.id}" data-action="toggle-flag" data-qid="${soal.id}" ${flagged?'checked':''}>
-        <label for="flag-${soal.id}">Tandai untuk ditinjau kembali (ragu-ragu)</label>
+        <label for="flag-${soal.id}">Tandai untuk ditinjau kembali (Ragu-ragu)</label>
       </div>
       <div class="qnav">
         <button class="btn btn-outline" data-action="go-prev" ${isFirst?'disabled':''}>&larr; Sebelumnya</button>
-        <button class="btn btn-primary" style="width:auto; padding:12px 24px;" data-action="go-next" ${isLast?'disabled':''}>Selanjutnya &rarr;</button>
+        <button class="btn btn-primary" style="width:auto; padding:12px 24px;" data-action="go-next">${isLast ? 'Simpan Terakhir' : 'Selanjutnya &rarr;'}</button>
       </div>
     </div>
 
@@ -791,7 +884,7 @@ function renderExam(){
       </div>
       <div class="side-progress"><div class="side-progress-bar" style="width:${(stat.dijawab/stat.total*100)||0}%"></div></div>
       <div class="legend">
-        <span><i style="background:#fff;border-color:var(--line);"></i>Belum dijawab</span>
+        <span><i style="background:#fff;border-color:var(--line);"></i>Kosong</span>
         <span><i style="background:var(--navy-700);border-color:var(--navy-700);"></i>Terjawab</span>
         <span><i style="background:var(--gold-500);border-color:var(--gold-500);"></i>Ragu-ragu</span>
       </div>
@@ -811,10 +904,10 @@ function renderFinishModal(stat){
   <div class="overlay">
     <div class="modal">
       <h3>Akhiri Sesi Ujian?</h3>
-      <p>Pastikan seluruh jawaban telah Anda periksa. Setelah diakhiri, sesi ujian tidak dapat dilanjutkan kembali.</p>
+      <p>Pastikan seluruh jawaban Anda telah diperiksa dan sesuai dengan format isian singkat yang diminta. Setelah diakhiri, sesi ujian tidak dapat dilanjutkan kembali.</p>
       <div class="modal-stats">
         <div><b>${stat.dijawab}</b><span>Terjawab</span></div>
-        <div><b>${stat.belum}</b><span>Belum</span></div>
+        <div><b>${stat.belum}</b><span>Kosong</span></div>
         <div><b>${stat.ragu}</b><span>Ragu-ragu</span></div>
       </div>
       <div class="modal-actions">
@@ -826,9 +919,12 @@ function renderFinishModal(stat){
   `;
 }
 
-/* update only sidebar (used on flag toggle to avoid full re-render focus loss) */
+/* Update sidebar khusus toggle checkbox tanpa rerender total (agar teks fokus tidak hilang) */
 function renderSidebarOnly(){
   render();
+  // Mengembalikan fokus ke textarea jika user mencentang ragu-ragu saat mengetik
+  const ta = document.querySelector('textarea[data-action="input-answer"]');
+  if(ta) ta.focus();
 }
 
 /* ================================================================
@@ -854,10 +950,10 @@ function renderFinished(){
         <div class="stamp stamp-anim" style="margin:0 auto;">
           <span class="l1">Resmi</span>
           <span class="l2">SELESAI</span>
-          <span class="l3">${EXAM_CONFIG.namaUjian}</span>
+          <span class="l3">OSNP SD 2026</span>
         </div>
         <h2>Ujian Telah Selesai</h2>
-        <p>${state.autoFinished ? 'Waktu pengerjaan telah habis dan sesi diakhiri otomatis oleh sistem.' : 'Terima kasih, jawaban Anda telah tersimpan.'}</p>
+        <p>${state.autoFinished ? 'Waktu pengerjaan telah habis dan sesi diakhiri otomatis oleh sistem.' : 'Terima kasih, seluruh rekaman jawaban format isian Anda telah tersimpan ke dalam sistem.'}</p>
         <div class="stat-grid">
           <div class="stat-box"><b>${stat.dijawab}</b><span>Terjawab</span></div>
           <div class="stat-box"><b>${stat.ragu}</b><span>Ragu-ragu</span></div>
