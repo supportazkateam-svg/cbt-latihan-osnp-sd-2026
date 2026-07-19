@@ -332,17 +332,33 @@
   .stat-box{background:#f5f7fb; border:1px solid var(--line); border-radius:6px; padding:12px 8px;}
   .stat-box b{display:block; font-size:20px; color:var(--navy-900);}
   .stat-box span{font-size:10px; color:var(--ink-400); text-transform:uppercase; letter-spacing:.04em;}
+  
+  /* ===================== BLOCKED SCREEN ===================== */
+  .blocked-screen {
+      position: fixed; inset: 0; background: var(--navy-900); color: #fff; z-index: 99999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 20px;
+  }
+  .blocked-box { max-width: 480px; width: 100%; padding: 30px; }
+  .blocked-box h2 { color: #ff4d4f; font-family: var(--font-display); font-size: 26px; margin: 15px 0 10px; }
+  .blocked-box p { color: #aab3c4; font-size: 14.5px; line-height: 1.6; margin-bottom: 24px; }
+  .block-timer-wrap { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 24px; border-radius: 8px; }
+  .block-timer-wrap .lbl { font-size: 11px; color: var(--gold-400); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .block-timer-wrap .val { font-family: var(--font-mono); font-size: 38px; font-weight: bold; letter-spacing: 0.05em; }
 </style>
 </head>
 <body>
 <div id="app"></div>
 
 <script>
+let clientIP = "Memuat IP...";
+fetch('https://api.ipify.org?format=json').then(r => r.json()).then(data => clientIP = data.ip).catch(()=> clientIP = "Perangkat Anda");
+
 /* ================================================================
    KONFIGURASI UJIAN
 ================================================================ */
 const EXAM_CONFIG = {
-  namaLembaga: "Panitia AzkaTeam - Seleksi OSNP SD 2026",
+  namaLembaga: "Panitia Seleksi OSNP Sekolah Dasar",
   namaUjian: "Seleksi OSNP SD 2026",
   tahap: "Simulasi Tryout — Tahap Provinsi",
   durasiMenit: 60
@@ -351,160 +367,218 @@ const EXAM_CONFIG = {
 const formatInstruction = `<span class="q-instruction">(Jawablah pertanyaan tersebut dengan format: (A) ................ ; (B) ................ sesuai dengan urutan huruf pertanyaan, dengan pemisah antar jawaban menggunakan tanda titik koma (;))</span>`;
 
 /* ================================================================
-   BANK SOAL & LEVEL KOGNITIF (Pedagogical Grading System)
-   Level 1: Pengetahuan / Hafalan (Bobot x1)
-   Level 2: Aplikasi Dasar (Bobot x2)
-   Level 3: Penalaran / HOTS (Bobot x3)
+   BANK SOAL GABUNGAN (PAKET 1 & PAKET 2)
 ================================================================ */
-const BANK_SOAL = [
+const ALL_SOAL = [
+    // === SOAL-SOAL PAKET 1 ===
     { 
-        id: 1, subtes: "IPA - Paket 1", level: 3,
+        id: 101, subtes: "IPA - Paket 1", level: 3,
         teks: `Perhatikan komponen jaring-jaring makanan pada ekosistem laut dalam berikut.<br>
                 <div class="q-image-container"><img src="gambar-1.png" alt="[Gambar Jaring Makanan Ekosistem Laut]"></div>
-                Fitoplankton berperan sebagai produsen tunggal yang dimakan oleh zooplankton dan udang kecil. Zooplankton menjadi sumber makanan bagi ikan kecil dan ubur-ubur. Udang kecil dimakan oleh ikan kecil dan ikan besar. Selanjutnya, ubur-ubur dimakan oleh ikan besar. Ikan kecil menjadi mangsa bagi ikan besar dan burung laut. Di ujung jaring-jaring makanan, ikan besar dan burung laut menjadi mangsa utama bagi hiu.<br><br>
-                Berdasarkan struktur jaring-jaring makanan tersebut, nilai dari selisih jumlah seluruh rantai makanan yang ada dengan jumlah organisme yang menempati tingkatan sebagai konsumen tingkat II (konsumen sekunder) adalah <b>...(A)...</b>, sementara jumlah organisme yang dapat bertindak sebagai konsumen puncak adalah <b>...(B)...</b><br>
+                Fitoplankton berperan sebagai produsen tunggal yang dimakan oleh zooplankton dan udang kecil[span_2](start_span)[span_2](end_span). Zooplankton menjadi sumber makanan bagi ikan kecil dan ubur-ubur[span_3](start_span)[span_3](end_span). Udang kecil dimakan oleh ikan kecil dan ikan besar[span_4](start_span)[span_4](end_span). Selanjutnya, ubur-ubur dimakan oleh ikan besar[span_5](start_span)[span_5](end_span). Ikan kecil menjadi mangsa bagi ikan besar dan burung laut[span_6](start_span)[span_6](end_span). Di ujung jaring-jaring makanan, ikan besar dan burung laut menjadi mangsa utama bagi hiu[span_7](start_span)[span_7](end_span).<br><br>
+                Berdasarkan struktur jaring-jaring makanan tersebut, nilai dari selisih jumlah seluruh rantai makanan yang ada dengan jumlah organisme yang menempati tingkatan sebagai konsumen tingkat II (konsumen sekunder) adalah <b>...(A)...</b>, sementara jumlah organisme yang dapat bertindak sebagai konsumen puncak adalah <b>...(B)...</b>[span_8](start_span)[span_8](end_span)<br>
                 ${formatInstruction}`,
-        kunci: ["3 / tiga", "1 / satu"]
+        kunci: ["3", "1"]
     },
     { 
-        id: 2, subtes: "IPA - Paket 1", level: 2,
-        teks: `Ketika kulit tergores oleh benda tajam, bakteri berpotensi masuk ke dalam jaringan tubuh bawah kulit. Sebagai respons cepat, sel tiang (<i>mast cell</i>) di area cedera melepaskan molekul sinyal kimia berupa histamin yang menyebabkan pelebaran pembuluh darah lokal (vasodilatasi) dan peningkatan permeabilitas kapiler darah. Efek ini memicu timbulnya tanda klinis berupa kemerahan, rasa panas, pembengkakan, dan rasa nyeri. Mekanisme pertahanan non-spesifik lapis kedua ini dikenal dengan istilah <b>...(A)...</b>, yang berfungsi untuk memobilisasi sel darah putih jenis <b>...(B)...</b> menuju lokasi infeksi untuk memfagositosis bakteri.<br>
+        id: 102, subtes: "IPA - Paket 1", level: 2,
+        teks: `Ketika kulit tergores oleh benda tajam, bakteri berpotensi masuk ke dalam jaringan tubuh bawah kulit[span_9](start_span)[span_9](end_span). Sebagai respons cepat, sel tiang (<i>mast cell</i>) di area cedera melepaskan molekul sinyal kimia berupa histamin yang menyebabkan pelebaran pembuluh darah lokal (vasodilatasi) dan peningkatan permeabilitas kapiler darah[span_10](start_span)[span_10](end_span). Efek ini memicu timbulnya tanda klinis berupa kemerahan, rasa panas, pembengkakan, dan rasa nyeri[span_11](start_span)[span_11](end_span). Mekanisme pertahanan non-spesifik lapis kedua ini dikenal dengan istilah <b>...(A)...</b>, yang berfungsi untuk memobilisasi sel darah putih jenis <b>...(B)...</b> menuju lokasi infeksi untuk memfagositosis bakteri[span_12](start_span)[span_12](end_span).<br>
                 ${formatInstruction}`,
-        kunci: ["inflamasi / peradangan", "fagosit / neutrofil / makrofag"]
+        kunci: ["inflamasi", "fagosit"]
     },
     { 
-        id: 3, subtes: "IPA - Paket 1", level: 1,
-        teks: `Perpindahan materi di alam melibatkan senyawa esensial yang mengalami perubahan wujud secara fisik. Proses penguapan air yang berasal dari jaringan makhluk hidup, khususnya melalui stomata daun tumbuhan akibat panas matahari dinamakan <b>...(A)...</b>, sedangkan proses perubahan wujud uap air di atmosfer menjadi partikel titik-titik air karena penurunan suhu udara membentuk awan dinamakan <b>...(B)...</b><br>
+        id: 103, subtes: "IPA - Paket 1", level: 1,
+        teks: `Perpindahan materi di alam melibatkan senyawa esensial yang mengalami perubahan wujud secara fisik[span_13](start_span)[span_13](end_span). Proses penguapan air yang berasal dari jaringan makhluk hidup, khususnya melalui stomata daun tumbuhan akibat panas matahari dinamakan <b>...(A)...</b>, sedangkan proses perubahan wujud uap air di atmosfer menjadi partikel titik-titik air karena penurunan suhu udara membentuk awan dinamakan <b>...(B)...</b>[span_14](start_span)[span_14](end_span)[span_15](start_span)[span_15](end_span)<br>
                 ${formatInstruction}`,
         kunci: ["transpirasi", "kondensasi"]
     },
     { 
-        id: 4, subtes: "IPA - Paket 1", level: 2,
-        teks: `Pada tumbuhan yang hidup di lingkungan kering dan gersang (xerofit), adaptasi metabolisme fotosintesis dilakukan dengan cara memisahkan waktu penangkapan gas karbon dioksida berdasarkan waktu siang dan malam. Penyerapan karbon dioksida dilakukan pada malam hari saat suhu udara rendah, lalu disimpan di dalam vakuola sel dalam bentuk asam malat. Jalur metabolisme khusus ini dinamakan tipe tumbuhan <b>...(A)...</b>, di mana pada siang hari asam organik tersebut akan dipecah kembali untuk melepaskan karbon dioksida menuju kloroplas guna menjalankan jalur asimilasi karbon dengan kondisi stomata dalam keadaan <b>...(B)...</b><br>
+        id: 104, subtes: "IPA - Paket 1", level: 2,
+        teks: `Pada tumbuhan yang hidup di lingkungan kering dan gersang (xerofit), adaptasi metabolisme fotosintesis dilakukan dengan cara memisahkan waktu penangkapan gas karbon dioksida berdasarkan waktu siang dan malam[span_16](start_span)[span_16](end_span). Penyerapan karbon dioksida dilakukan pada malam hari saat suhu udara rendah, lalu disimpan di dalam vakuola sel dalam bentuk asam malat[span_17](start_span)[span_17](end_span). Jalur metabolisme khusus ini dinamakan tipe tumbuhan <b>...(A)...</b>, di mana pada siang hari asam organik tersebut akan dipecah kembali untuk melepaskan karbon dioksida menuju kloroplas guna menjalankan jalur asimilasi karbon dengan kondisi stomata dalam keadaan <b>...(B)...</b>[span_18](start_span)[span_18](end_span)<br>
                 ${formatInstruction}`,
         kunci: ["cam", "tertutup"]
     },
     { 
-        id: 5, subtes: "IPA - Paket 1", level: 1,
-        teks: `Perkembangan serangga tidak hanya melibatkan perubahan bentuk, tetapi juga proses pergantian kulit luar secara periodik untuk memfasilitasi pertambahan ukuran tubuh yang terhambat oleh eksoskeleton kaku. Proses pelepasan eksoskeleton lama tersebut dikenal dengan istilah <b>...(A)...</b>, sedangkan bentuk tubuh atau fase perkembangan serangga di antara dua proses pergantian kulit yang berurutan disebut dengan <b>...(B)...</b><br>
+        id: 105, subtes: "IPA - Paket 1", level: 1,
+        teks: `Perkembangan serangga tidak hanya melibatkan perubahan bentuk, tetapi juga proses pergantian kulit luar secara periodik untuk memfasilitasi pertambahan ukuran tubuh yang terhambat oleh eksoskeleton kaku[span_19](start_span)[span_19](end_span). Proses pelepasan eksoskeleton lama tersebut dikenal dengan istilah <b>...(A)...</b>, sedangkan bentuk tubuh atau fase perkembangan serangga di antara dua proses pergantian kulit yang berurutan disebut dengan <b>...(B)...</b>[span_20](start_span)[span_20](end_span)<br>
                 ${formatInstruction}`,
-        kunci: ["ekdisis / molting", "instar"]
+        kunci: ["ekdisis", "instar"]
     },
     { 
-        id: 6, subtes: "IPA - Paket 1", level: 2,
-        teks: `Kelelawar (<i>Pteropus sp.</i>) dan Paus Biru (<i>Balaenoptera musculus</i>) merupakan dua fauna yang memiliki habitat dan adaptasi lokomosi (alat gerak) yang bertolak belakang, di mana satu spesies mampu terbang di udara dan spesies lainnya berenang di lautan. Walaupun morfologi luarnya berbeda jauh, keduanya memiliki kedekatan evolusioner yang erat dan dimasukkan ke dalam Kelas <b>...(A)...</b> karena sama-sama memiliki kelenjar susu dan berambut. Kedua hewan ini memproduksi panas internal dalam jumlah besar dari laju perombakan zat makanan yang konstan untuk mempertahankan kestabilan suhu tubuhnya pada rentang yang optimal, sehingga dikategorikan sebagai organisme <b>...(B)...</b><br>
+        id: 106, subtes: "IPA - Paket 1", level: 2,
+        teks: `Kelelawar (<i>Pteropus sp.</i>) dan Paus Biru (<i>Balaenoptera musculus</i>) merupakan dua fauna yang memiliki habitat dan adaptasi lokomosi (alat gerak) yang bertolak belakang, di mana satu spesies mampu terbang di udara dan spesies lainnya berenang di lautan[span_21](start_span)[span_21](end_span). Walaupun morfologi luarnya berbeda jauh, keduanya memiliki kedekatan evolusioner yang erat dan dimasukkan ke dalam Kelas <b>...(A)...</b> karena sama-sama memiliki kelenjar susu dan berambut[span_22](start_span)[span_22](end_span). Kedua hewan ini memproduksi panas internal dalam jumlah besar dari laju perombakan zat makanan yang konstan untuk mempertahankan kestabilan suhu tubuhnya pada rentang yang optimal, sehingga dikategorikan sebagai organisme <b>...(B)...</b>[span_23](start_span)[span_23](end_span)<br>
                 ${formatInstruction}`,
-        kunci: ["mammalia / mamalia", "endoterm / homoioterm"]
+        kunci: ["mammalia", "endoterm"]
     },
     { 
-        id: 7, subtes: "IPA - Paket 1", level: 2,
-        teks: `Tabel berikut menunjukkan beberapa hewan mamalia khas dari berbagai pulau di Indonesia beserta tipe makanannya:
-                <table class="q-table">
-                    <tr><th>Pulau</th><th>Hewan</th></tr>
-                    <tr><td>Sumatera</td><td>Harimau Sumatera</td></tr>
-                    <tr><td>Jawa</td><td>Macan Tutul Jawa</td></tr>
-                    <tr><td>Sulawesi</td><td>Anoa Dataran Rendah</td></tr>
-                    <tr><td>Kalimantan</td><td>Bekantan</td></tr>
-                </table>
-                Spesies Harimau Sumatera dan Macan Tutul Jawa menunjukkan hubungan kekerabatan yang dekat karena keduanya dimasukkan ke dalam Familia <b>...(A)...</b>. Berdasarkan letak garis biogeografi Wallace, hewan Anoa dan Bekantan pada tabel di atas berturut-turut merupakan fauna khas yang menempati zona <b>...(B)...</b><br>
+        id: 107, subtes: "IPA - Paket 1", level: 2,
+        teks: `Tabel berikut menunjukkan beberapa hewan mamalia khas dari berbagai pulau di Indonesia beserta tipe makanannya: [Sumatera: Harimau Sumatera; Jawa: Macan Tutul Jawa; Sulawesi: Anoa Dataran Rendah; Kalimantan: Bekantan][span_24](start_span)[span_24](end_span). Spesies Harimau Sumatera dan Macan Tutul Jawa menunjukkan hubungan kekerabatan yang dekat karena keduanya dimasukkan ke dalam Familia <b>...(A)...</b>[span_25](start_span)[span_25](end_span). Berdasarkan letak garis biogeografi Wallace, hewan Anoa dan Bekantan pada tabel di atas berturut-turut merupakan fauna khas yang menempati zona <b>...(B)...</b>[span_26](start_span)[span_26](end_span)<br>
                 ${formatInstruction}`,
-        kunci: ["felidae", "peralihan dan asiatis / peralihan / asiatis"]
+        kunci: ["felidae", "peralihan"]
     },
     { 
-        id: 8, subtes: "IPA - Paket 1", level: 2,
-        teks: `Perhatikan karakteristik dua jenis daun tumbuhan berikut.<br>
-                <div class="q-image-container"><img src="gambar-8.png" alt="[Gambar Daun Jagung (P) dan Daun Singkong (Q)]"></div>
-                Daun P (daun jagung) memiliki pelepah daun yang memeluk batang dengan tulang daun utama di tengah yang diapit oleh urat-urat daun lurus membujur searah menuju satu titik di ujung helai daun. Daun Q (daun singkong) memiliki sehelai daun lebar yang terbagi menjadi beberapa lekukan dalam dengan beberapa tulang daun utama yang memancar keluar dari satu titik pangkal tangkai daun secara bersamaan.<br><br>
-                Berdasarkan struktur fisiknya, Daun Q memiliki tipe pertulangan daun <b>...(A)...</b>, sedangkan Daun P dikategorikan sebagai organ dari kelompok tumbuhan yang memiliki sistem perakaran <b>...(B)...</b><br>
+        id: 108, subtes: "IPA - Paket 1", level: 2,
+        teks: `Daun P (daun jagung) memiliki pelepah daun yang memeluk batang dengan tulang daun utama di tengah yang diapit oleh urat-urat daun lurus membujur searah menuju satu titik di ujung helai daun[span_27](start_span)[span_27](end_span). Daun Q (daun singkong) memiliki sehelai daun lebar yang terbagi menjadi beberapa lekukan dalam dengan beberapa tulang daun utama yang memancar keluar dari satu titik pangkal tangkai daun secara bersamaan[span_28](start_span)[span_28](end_span). Berdasarkan struktur fisiknya, Daun Q memiliki tipe pertulangan daun <b>...(A)...</b>, sedangkan Daun P dikategorikan sebagai organ dari kelompok tumbuhan yang memiliki sistem perakaran <b>...(B)...</b>[span_29](start_span)[span_29](end_span)<br>
                 ${formatInstruction}`,
         kunci: ["menjari", "serabut"]
     },
     { 
-        id: 9, subtes: "IPA - Paket 1", level: 3,
-        teks: `Perhatikan gambar berikut!<br>
-                <div class="q-image-container"><img src="gambar-9.png" alt="[Grafik sistem ekskresi, otak, dan urine]"></div>
-                Grafik pemantauan pengeluaran cairan tubuh menunjukkan bahwa saat seseorang mengalami dehidrasi atau kekurangan cairan setelah beraktivitas berat di cuaca terik, volume urinenya menjadi sangat sedikit. Fenomena ini dikendalikan oleh sistem saraf pusat melalui hipotalamus yang merangsang kelenjar hipofisis untuk melepaskan suatu hormon ke dalam darah menuju ginjal guna meningkatkan penyerapan kembali (reabsorpsi) air. Hormon yang berperan menekan volume urine tersebut adalah <b>...(A)...</b>, dan akibat dari tingginya kadar hormon tersebut di dalam darah membuat konsentrasi atau tingkat kepekatan urine yang dikeluarkan menjadi <b>...(B)...</b><br>
+        id: 109, subtes: "IPA - Paket 1", level: 3,
+        teks: `Grafik pemantauan pengeluaran cairan tubuh menunjukkan bahwa saat seseorang mengalami dehidrasi atau kekurangan cairan setelah beraktivitas berat di cuaca terik, volume urinenya menjadi sangat sedikit[span_30](start_span)[span_30](end_span). Fenomena ini dikendalikan oleh sistem saraf pusat melalui hipotalamus yang merangsang kelenjar hipofisis untuk melepaskan suatu hormon ke dalam darah menuju ginjal guna meningkatkan penyerapan kembali (reabsorpsi) air[span_31](start_span)[span_31](end_span). Hormon yang berperan menekan volume urine tersebut adalah <b>...(A)...</b>, dan akibat dari tingginya kadar hormon tersebut di dalam darah membuat konsentrasi atau tingkat kepekatan urine yang dikeluarkan menjadi <b>...(B)...</b>[span_32](start_span)[span_32](end_span)<br>
                 ${formatInstruction}`,
-        kunci: ["adh / antidiuretic / antidiuretik", "pekat"]
+        kunci: ["adh", "pekat"]
     },
     { 
-        id: 10, subtes: "IPA - Paket 1", level: 3,
-        teks: `Saat berkemah di kawasan pegunungan yang bersuhu sangat dingin, Andi memperhatikan bahwa ia menjadi lebih sering buang air kecil (mikturisi) dibanding saat berada di dataran rendah yang hangat. Fenomena meningkatnya produksi urine ini terjadi karena pembuluh darah di kulit menyempit untuk mengurangi kehilangan panas, yang menyebabkan tekanan darah di organ dalam meningkat. Sebagai respons keseimbangan, tubuh menekan pengeluaran hormon antidiuretik (ADH) agar kelebihan cairan dapat dikeluarkan lewat ginjal. Peristiwa perubahan volume produksi urine akibat adaptasi suhu lingkungan ini diatur secara hormonal oleh kelenjar <b>...(A)...</b>, dan bertujuan untuk menjaga keseimbangan cairan tubuh yang dikenal dengan istilah <b>...(B)...</b><br>
+        id: 110, subtes: "IPA - Paket 1", level: 3,
+        teks: `Saat berkemah di kawasan pegunungan yang bersuhu sangat dingin, Andi memperhatikan bahwa ia menjadi lebih sering buang air kecil (mikturisi) dibanding saat berada di dataran rendah yang hangat[span_33](start_span)[span_33](end_span). Fenomena meningkatnya produksi urine ini terjadi karena pembuluh darah di kulit menyempit untuk mengurangi kehilangan panas, yang menyebabkan tekanan darah di organ dalam meningkat[span_34](start_span)[span_34](end_span). Sebagai respons keseimbangan, tubuh menekan pengeluaran hormon antidiuretik (ADH) agar kelebihan cairan dapat dikeluarkan lewat ginjal[span_35](start_span)[span_35](end_span). Peristiwa perubahan volume produksi urine akibat adaptasi suhu lingkungan ini diatur secara hormonal oleh kelenjar <b>...(A)...</b>, dan bertujuan untuk menjaga keseimbangan cairan tubuh yang dikenal dengan istilah <b>...(B)...</b>[span_36](start_span)[span_36](end_span)<br>
                 ${formatInstruction}`,
         kunci: ["hipofisis", "osmoregulasi"]
     },
+
+    // === SOAL-SOAL PAKET 2 (Kunci Diselaraskan dengan Dokumen Pembahasan Resmi) ===
     { 
-        id: 11, subtes: "IPA - Paket 1", level: 2,
-        teks: `Dalam sebuah eksperimen laboratorium ekologi, sekelompok tikus kangguru (<i>Dipodomys merriami</i>) ditempatkan di dalam kandang simulasi kering tanpa akses air minum sama sekali selama beberapa minggu. Hewan pengerat ini hanya diberikan makanan berupa biji-bijian kering. Hasil pemantauan menunjukkan tikus-tikus tersebut tetap terhidrasi dengan baik, memproduksi urine yang sangat pekat dengan volume minimal, dan feses yang hampir sepenuhnya kering. Di samping itu, mereka hanya aktif bergerak di dalam lorong bawah tanah pada malam hari. Kemampuan ginjal tikus kangguru menghasilkan urine yang sangat pekat merupakan bentuk adaptasi <b>...(A)...</b>. Sementara itu, aktivitas mencari makan yang hanya dilakukan pada malam hari (nokturnal) berfungsi untuk <b>...(B)...</b><br>
+        id: 201, subtes: "IPA - Paket 2", level: 3,
+        teks: `Perhatikan sebuah jaring-jaring makanan di ekosistem hutan berikut.<br>
+                <div class="q-image-container"><img src="gambar-p2-1.png" alt="[Gambar Jaring Makanan Ekosistem Hutan]"></div>
+                Berdasarkan deskripsi hubungan interaksi tersebut, terdapat sejumlah <b>...(A)...</b> rantai makanan yang menyusun jaring-jaring makanan tersebut, dan terdapat sejumlah <b>...(B)...</b> hewan yang bertindak sebagai konsumen puncak (<i>top consumer</i>).[span_37](start_span)[span_37](end_span)<br>
                 ${formatInstruction}`,
-        kunci: ["fisiologi", "mengurangi kehilangan air / mengurangi penguapan"]
+        kunci: ["8", "1"] // Sesuai: (A) 8; (B) 1[span_38](start_span)[span_38](end_span)
     },
     { 
-        id: 12, subtes: "IPA - Paket 1", level: 1,
-        teks: `Rian mengamati proses pembuatan tapai ketan yang dilakukan oleh neneknya. Beras ketan yang telah dikukus dan didinginkan ditaburi dengan ragi tapai secara merata, kemudian dibungkus rapat menggunakan daun pisang. Nenek menjelaskan bahwa salah satu mikroorganisme utama di dalam ragi tapai tersebut adalah jamur multiseluler <i>Amylomyces rouxii</i> yang termasuk ke dalam kelompok Kingdom <b>...(A)...</b>. Setelah disimpan selama tiga hari, bungkusan tapai tersebut mengeluarkan aroma harum yang khas, berair, terasa manis, dan memicu sensasi sedikit menyengat di tenggorokan karena terbentuknya senyawa kimia berupa <b>...(B)...</b> dari hasil perombakan karbohidrat.<br>
+        id: 202, subtes: "IPA - Paket 2", level: 2,
+        teks: `Bayi yang baru lahir mendapatkan perlindungan awal terhadap berbagai agen patogen lingkungan melalui transfer antibodi berupa Imunoglobulin G (IgG) dari sirkulasi darah ibu melewati plasenta selama masa kandungan[span_39](start_span)[span_39](end_span). Perlindungan ini kemudian diperkuat setelah kelahiran melalui asupan kolostrum dan ASI yang kaya akan Imunoglobulin A (IgA)[span_40](start_span)[span_40](end_span). Mekanisme pertahanan tubuh yang diperoleh bayi tanpa perlu memproduksi antibodi sendiri dari sel limfositnya ini dikenal dengan istilah sistem imunitas <b>...(A)...</b> yang disalurkan secara <b>...(B)...</b>[span_41](start_span)[span_41](end_span)<br>
                 ${formatInstruction}`,
-        kunci: ["fungi", "alkohol / etanol"]
+        kunci: ["pasif", "alami"] // Sesuai: (A) pasif; (B) alami[span_42](start_span)[span_42](end_span)
     },
     { 
-        id: 13, subtes: "IPA - Paket 1", level: 2,
-        teks: `Sinta sering sekali merasakan lemas, pusing yang hebat, dan wajahnya terlihat sangat pucat saat beraktivitas di sekolah. Hasil pemeriksaan laboratorium menunjukkan bahwa kadar hemoglobin (Hb) di dalam tubuhnya berada jauh di bawah ambang batas normal akibat menderita anemia aplastik stadium lanjut, di mana tubuhnya berhenti memproduksi sel darah baru dalam jumlah memadai. Dokter memutuskan untuk melakukan prosedur mutakhir berupa transplantasi sel punca hematopoietik (<i>hematopoietic stem cell transplantation</i>) dari donor yang cocok agar sistem peredaran darah Sinta dapat pulih kembali.<br><br>
-                Jenis sel darah utama yang mengalami penurunan drastis sehingga menyebabkan tubuh Sinta kekurangan hemoglobin dan pasokan oksigen ke jaringan adalah sel <b>...(A)...</b>. Intervensi medis berupa penanaman sel punca donor tersebut disuntikkan langsung menuju tempat asal mula pembentukan sel darah merah ini di dalam tubuh manusia, yaitu <b>...(B)...</b><br>
+        id: 203, subtes: "IPA - Paket 2", level: 2,
+        teks: `Dalam siklus biogeokimia, terdapat unsur penting penyusun asam amino yang melimpah di atmosfer bumi tetapi tidak dapat diserap langsung oleh tumbuhan tingkat tinggi dalam bentuk gas, melainkan harus diubah terlebih dahulu oleh bakteri tanah menjadi ion amonium atau nitrat melalui proses <b>...(A)...</b>, sedangkan unsur utama penyusun senyawa organik yang dilepaskan kembali ke atmosfer oleh tumbuhan melalui proses respirasi seluler tetapi diserap kembali saat fotosintesis adalah <b>...(B)...</b>[span_43](start_span)[span_43](end_span)<br>
                 ${formatInstruction}`,
-        kunci: ["darah merah / eritrosit", "sumsum tulang"]
+        kunci: ["fiksasi nitrogen", "karbon"] // Sesuai: (A) fiksasi nitrogen; (B) karbon[span_44](start_span)[span_44](end_span)
     },
     { 
-        id: 14, subtes: "IPA - Paket 1", level: 3,
-        teks: `Perhatikan studi kasus berikut!<br>
-                <div class="q-image-container"><img src="gambar-14.png" alt="[Gambar Anggrek Kantung dan Lebah]"></div>
-                Anggrek kantung raksasa (<i>Cypripedium calceolus</i>) memiliki struktur labellum (bibir bunga) yang termodifikasi membentuk kantung dalam yang licin dan berisi sedikit cairan penjebak. Ketika lebah soliter dari genus <i>Andrena</i> mendarat di tepi kantung, lebah tersebut sering kali tergelincir jatuh ke bagian dasar kantung. Satu-satunya jalan keluar bagi lebah adalah merayap naik melalui saluran sempit di bagian belakang bunga, yang memaksanya menempelkan punggungnya pada organ reproduksi tanaman untuk mengambil atau menaruh serbuk sari.<br><br>
-                Lebah soliter yang bertindak sebagai pollinator unik tersebut termasuk dalam kelompok hewan Avertebrata dari Kelas <b>...(A)...</b>. Hubungan ekologi yang terjadi di mana lebah terjebak dan bersusah payah keluar tanpa mendapatkan nektar atau madu sama sekali, sedangkan tanaman anggur diuntungkan karena berhasil diserbuki dinamakan interaksi <b>...(B)...</b><br>
+        id: 204, subtes: "IPA - Paket 2", level: 2,
+        teks: `Proses fotosintesis dibagi menjadi dua tahap utama yang saling berkesinambungan[span_45](start_span)[span_45](end_span). Tahap pertama memanfaatkan energi foton matahari untuk memecah molekul air di dalam membran tilakoid yang menghasilkan gas oksigen, ATP, dan NADPH melalui proses fotolisis[span_46](start_span)[span_46](end_span). Produk berenergi tinggi dari tahap pertama tersebut kemudian dialirkan ke dalam stroma untuk mereduksi gas karbon dioksida menjadi molekul gula fosfat[span_47](start_span)[span_47](end_span). Tahapan fiksasi karbon yang tidak bergantung langsung pada cahaya ini dikenal dengan nama siklus <b>...(A)...</b>, di mana efisiensi pengikatan gas karbon dioksidanya sangat bergantung pada aktivitas enzim <b>...(B)...</b>[span_48](start_span)[span_48](end_span)<br>
                 ${formatInstruction}`,
-        kunci: ["insecta", "komensalisme"]
+        kunci: ["calvin", "rubisco"] // Sesuai: (A) Calvin; (B) Rubisco[span_49](start_span)[span_49](end_span)
     },
     { 
-        id: 15, subtes: "IPA - Paket 1", level: 3,
+        id: 205, subtes: "IPA - Paket 2", level: 1,
+        teks: `Beberapa serangga mengalami metamorfosis sempurna di mana bentuk tubuh saat menetas sangat berbeda dengan bentuk dewasanya[span_50](start_span)[span_50](end_span). Siklus hidup ini melalui empat tahapan utama, yaitu telur, larva, <b>...(A)...</b>, dan imago (dewasa)[span_51](start_span)[span_51](end_span). Kelompok serangga yang mengalami seluruh tahapan perubahan bentuk secara lengkap ini diklasifikasikan ke dalam kelompok <b>...(B)...</b>[span_52](start_span)[span_52](end_span)<br>
+                ${formatInstruction}`,
+        kunci: ["pupa", "holometabola"] // Sesuai: (A) pupa; (B) holometabola[span_53](start_span)[span_53](end_span)
+    },
+    { 
+        id: 206, subtes: "IPA - Paket 2", level: 2,
+        teks: `Ikan Pari Manta dan Ikan Hiu Paus merupakan biota laut yang berukuran besar dan dapat ditemukan di perairan Indonesia[span_54](start_span)[span_54](end_span). Keduanya memiliki struktur tubuh yang ditopang oleh endoskeleton fleksibel yang tidak tersusun dari tulang keras, melainkan dari jaringan tulang rawan[span_55](start_span)[span_55](end_span). Berdasarkan karakteristik jaringan penyusun rangkanya, kedua hewan tersebut dikelompokkan ke dalam Kelas <b>...(A)...</b> Berbeda dengan mamalia laut, kelompok ikan ini tidak mampu mempertahankan suhu tubuh internalnya secara konstan, sehingga suhu tubuh mereka fluktuatif mengikuti perubahan suhu air di lingkungan sekitarnya atau dikenal dengan istilah <b>...(B)...</b>[span_56](start_span)[span_56](end_span)<br>
+                ${formatInstruction}`,
+        kunci: ["chondrichthyes", "poikiloterm"] // Sesuai: (A) Chondrichthyes; (B) poikiloterm[span_57](start_span)[span_57](end_span)
+    },
+    { 
+        id: 207, subtes: "IPA - Paket 2", level: 2,
+        teks: `Tabel berikut menunjukkan beberapa tumbuhan kantong semar endemik dari berbagai wilayah di Indonesia beserta status ketinggian habitatnya: [Sumatera: Nepenthes kemiriensis; Kalimantan: Nepenthes rajah; Sulawesi: Nepenthes eymae; Papua: Nepenthes lamii][span_58](start_span)[span_58](end_span). Perbedaan ciri morfologi dan kantong pada spesies tumbuhan di atas yang dipisahkan oleh isolasi geografis antarpulau menunjukkan keanekaragaman hayati pada tingkatan <b>...(A)...</b> Tumbuhan kantong semar pada tabel tersebut dikelompokkan sebagai tumbuhan fungsional heterotrof karena kemampuannya mencerna serangga untuk memenuhi kebutuhan unsur <b>...(B)...</b>[span_59](start_span)[span_59](end_span)<br>
+                ${formatInstruction}`,
+        kunci: ["spesies", "nitrogen"] // Sesuai: (A) spesies; (B) nitrogen[span_60](start_span)[span_60](end_span)
+    },
+    { 
+        id: 208, subtes: "IPA - Paket 2", level: 2,
+        teks: `Perhatikan gambar berikut.<br>
+                <div class="q-image-container"><img src="gambar-p2-8.png" alt="[Gambar Daun Sirih (X), Mangga (Y), Padi (Z)]"></div>
+                Perhatikan deskripsi karakteristik tiga jenis daun berikut. Daun X (daun sirih) memiliki beberapa tulang daun berukuran besar yang melengkung dari pangkal lalu menyatu kembali di ujung daun[span_61](start_span)[span_61](end_span). Daun Y (daun mangga) memiliki satu ibu tulang daun yang membujur lurus di tengah dengan tulang-tulang cabang yang tumbuh ke samping menyerupai duri ikan[span_62](start_span)[span_62](end_span). Daun Z (daun padi) memiliki susunan garis-garis tulang daun yang membujur sejajar dari pangkal hingga ujung daun[span_63](start_span)[span_63](end_span).<br><br>
+                Berdasarkan deskripsi morfologi tersebut, Daun X dan Daun Y berturut-turut merupakan contoh dari tipe pertulangan daun melengkung dan <b>...(A)...</b>, di mana kedua tumbuhan pemilik daun tersebut dikategorikan sebagai kelompok tumbuhan berkambium atau <b>...(B)...</b>[span_64](start_span)[span_64](end_span)<br>
+                ${formatInstruction}`,
+        kunci: ["menyirip", "dikotil"] // Sesuai: (A) menyirip; (B) dikotil[span_65](start_span)[span_65](end_span)
+    },
+    { 
+        id: 209, subtes: "IPA - Paket 2", level: 2,
+        teks: `Perhatikan grafik kadar gula darah berikut!<br>
+                <div class="q-image-container"><img src="gambar-p2-9.png" alt="[Grafik Kadar Gula Darah]"></div>
+                Seorang anak diuji kadar gula darahnya setelah mengonsumsi makanan yang kaya akan karbohidrat[span_66](start_span)[span_66](end_span). Grafik hasil pemantauan menunjukkan kadar gula darahnya meningkat tajam hingga mencapai puncaknya dalam waktu satu jam, kemudian berangsur-angsur turun kembali secara konstan menuju kondisi normal[span_67](start_span)[span_67](end_span). Penurunan kadar gula darah ini disebabkan oleh aktivitas hormon penyeimbang yang disekresikan oleh kelenjar pankreas menuju aliran darah, yaitu hormon <b>...(A)...</b> Jika seseorang mengalami gangguan berupa kegagalan produksi atau penurunan sensitivitas terhadap hormon ini, maka ia akan menderita penyakit <b>...(B)...</b>[span_68](start_span)[span_68](end_span)<br>
+                ${formatInstruction}`,
+        kunci: ["insulin", "diabetes melitus"] // Sesuai: (A) insulin; (B) diabetes melitus[span_69](start_span)[span_69](end_span)
+    },
+    { 
+        id: 210, subtes: "IPA - Paket 2", level: 3,
+        teks: `Ketika Budi sedang berolahraga lari cepat, otot-otot tubuhnya bekerja sangat keras dan membutuhkan pasokan energi yang besar dari proses respirasi sel[span_70](start_span)[span_70](end_span). Akibatnya, produksi gas karbon dioksida di dalam darah meningkat tajam, yang memicu otak untuk mengirim sinyal percepatan kerja otot antar-tulang rusuk dan diafragma[span_71](start_span)[span_71](end_span). Peningkatan frekuensi pernapasan yang terjadi secara otomatis ini merupakan bentuk respons tubuh dalam mekanisme <b>...(A)...</b> Fungsi dari proses percepatan pernapasan tersebut adalah untuk membuang kelebihan gas karbon dioksida sekaligus meningkatkan pasokan <b>...(B)...</b> bagi sel-sel tubuh.[span_72](start_span)[span_72](end_span)<br>
+                ${formatInstruction}`,
+        kunci: ["homeostasis", "oksigen"] // Sesuai: (A) homeostasis; (B) oksigen[span_73](start_span)[span_73](end_span)
+    },
+    { 
+        id: 211, subtes: "IPA - Paket 2", level: 3,
+        teks: `Sebuah lembaga penelitian mengamati perilaku sekelompok unta (<i>Camelus dromedarius</i>) yang ditempatkan di lingkungan gurun dengan suhu lingkungan mencapai 43 &deg;C[span_74](start_span)[span_74](end_span). Peneliti mencatat bahwa unta-unta tersebut jarang sekali berkeringat meskipun terpapar terik matahari, dan suhu tubuh mereka dibiarkan meningkat dari 34 &deg;C di pagi hari menjadi 41 &deg;C di siang hari tanpa mengalami <i>heat stroke</i>[span_75](start_span)[span_75](end_span). Selain itu, saat beristirahat di bawah terik matahari, mereka cenderung duduk saling berdekatan (bergerombol) menghadap ke arah matahari[span_76](start_span)[span_76](end_span).<br>
+                Perubahan atau toleransi suhu tubuh unta yang mengikuti fluktuasi suhu lingkungan ini merupakan bentuk adaptasi <b>...(A)...</b> Sementara itu, perilaku duduk bergerombol menghadap matahari saat suhu panas berfungsi untuk <b>...(B)...</b>[span_77](start_span)[span_77](end_span)<br>
+                ${formatInstruction}`,
+        kunci: ["fisiologi", "meminimalkan penyerapan panas"] // Sesuai: (A) fisiologi; (B) meminimalkan penyerapan panas matahari[span_78](start_span)[span_78](end_span)
+    },
+    { 
+        id: 212, subtes: "IPA - Paket 2", level: 1,
+        teks: `Dewi melakukan percobaan pembuatan yoghurt rumahan menggunakan bahan dasar susu sapi murni segar[span_79](start_span)[span_79](end_span). Sebelum difermentasi, susu tersebut dipanaskan terlebih dahulu hingga suhu 85 &deg;C lalu didinginkan[span_80](start_span)[span_80](end_span). Setelah suhunya suam-suam kuku, Dewi mencampurkan kultur starter yang mengandung mikroorganisme berupa <i>Lactobacillus bulgaricus</i> dan <i>Streptococcus thermophilus</i>[span_81](start_span)[span_81](end_span). Organisme starter tersebut termasuk ke dalam kelompok makhluk hidup tanpa membran inti sel, yaitu Kingdom <b>...(A)...</b> Setelah didiamkan dalam wadah tertutup selama 24 jam, susu yang awalnya encer berubah tekstur menjadi kental dan memiliki rasa yang masam akibat akumulasi kandungan <b>...(B)...</b> yang dihasilkan selama proses tersebut.[span_82](start_span)[span_82](end_span)<br>
+                ${formatInstruction}`,
+        kunci: ["monera", "asam laktat"] // Sesuai: (A) Monera; (B) asam laktat[span_83](start_span)[span_83](end_span)
+    },
+    { 
+        id: 213, subtes: "IPA - Paket 2", level: 2,
+        teks: `Andi mengalami luka robek yang cukup dalam saat bermain[span_84](start_span)[span_84](end_span). Namun, setelah beberapa jam, darah dari lukanya tidak kunjung membeku dan terus mengalir secara konstan[span_85](start_span)[span_85](end_span). Setelah diperiksa di rumah sakit, dokter mendiagnosis Andi menderita hemofilia akibat kekurangan protein faktor pembekuan darah bawaan[span_86](start_span)[span_86](end_span). Untuk mengatasi kondisi kronis ini secara permanen, tim medis merencanakan terapi inovatif berbasis bioteknologi sel punca (<i>stem cell</i>) guna mengganti fragmen genetik yang rusak agar tubuh Andi dapat memproduksi protein pembeku darah secara mandiri[span_87](start_span)[span_87](end_span).<br>
+                Sel target utama di dalam sistem sirkulasi darah yang memiliki peran krusial berpasangan dengan protein faktor pembekuan darah untuk menghentikan perdarahan pada luka Andi adalah sel <b>...(A)...</b> Dokter akan memfokuskan terapi penggantian atau perbaikan sel induk tersebut pada organ tempat memproduksi komponen sel darah ini pertama kali, yaitu di <b>...(B)...</b>[span_88](start_span)[span_88](end_span)<br>
+                ${formatInstruction}`,
+        kunci: ["trombosit", "sumsum tulang"] // Sesuai: (A) trombosit; (B) sumsum tulang[span_89](start_span)[span_89](end_span)
+    },
+    { 
+        id: 214, subtes: "IPA - Paket 2", level: 2,
+        teks: `Perhatikan gambar berikut.<br>
+                <div class="q-image-container"><img src="gambar-p2-14.png" alt="[Gambar Siklus Ngengat Yucca]"></div>
+                Tanaman <i>Yucca</i> (<i>Yucca whipplei</i>) yang tumbuh di daerah gersang memiliki hubungan ketergantungan yang sangat ketat dengan sejenis ngengat khusus, yaitu ngengat Yucca (<i>Tegeticula yuccasella</i>)[span_90](start_span)[span_90](end_span). Ngengat betina dewasa secara sengaja mengumpulkan serbuk sari dari satu bunga menggunakan tentakel mulut khususnya, lalu terbang ke bunga lain untuk meletakkan serbuk sari tersebut langsung ke kepala putik tanaman[span_91](start_span)[span_91](end_span).<br>
+                Ngengat Yucca sebagai hewan polinator spesifik tersebut merupakan kelompok hewan Avertebrata yang berasal dari Kelas <b>...(A)...</b> Ngengat tersebut melakukan penyerbukan bukan untuk mencari nektar, melainkan agar bakal biji tanaman terbentuk dan dapat dijadikan sebagai sumber makanan bagi larva yang menetas dari telurnya di dalam ovarium bunga[span_92](start_span)[span_92](end_span). Hubungan ekologi jangka panjang yang saling menguntungkan secara mutlak antara tanaman <i>Yucca</i> dan ngengat ini menunjukkan bentuk interaksi <b>...(B)...</b>[span_93](start_span)[span_93](end_span)<br>
+                ${formatInstruction}`,
+        kunci: ["insecta", "mutualisme"] // Sesuai: (A) Insecta; (B) simbiosis mutualisme[span_94](start_span)[span_94](end_span)
+    },
+    { 
+        id: 215, subtes: "IPA - Paket 2", level: 3,
         teks: `Perhatikan grafik berikut!<br>
-                <div class="q-image-container"><img src="gambar-15.png" alt="[Grafik Kadar Glukosa Darah]"></div>
-                Dalam sebuah eksperimen klinis, seorang sukarelawan sehat diminta meminum larutan glukosa pekat setelah berpuasa selama 8 jam. Grafik memantau fluktuasi kadar glukosa darah dan kadar dua hormon utama pankreas secara simultan setiap 15 menit. Berdasarkan grafik hasil pemantauan, kadar glukosa darah melonjak drastis dan mencapai titik puncak tertingginya pada menit ke-<b>...(A)...</b>. Kenaikan glukosa darah ini merangsang respons hormonal secara instan. Pada fase penurunan kembali kadar gula darah menuju kondisi homeostasis normal, grafik menunjukkan bahwa hal tersebut dikendalikan oleh peningkatan sekresi hormon <b>...(B)...</b> secara masif ke dalam aliran darah.<br>
+                <div class="q-image-container"><img src="gambar-p2-15.png" alt="[Grafik Asam Laktat Darah]"></div>
+                Seorang atlet lari jarak pendek (<i>sprinter</i>) melakukan simulasi latihan lari 100 meter[span_95](start_span)[span_95](end_span). Grafik melacak kadar asam laktat di dalam otot kaki atlet tersebut sebelum, selama berlari cepat, hingga fase pemulihan setelah garis finis[span_96](start_span)[span_96](end_span). Pada grafik fluktuasi tersebut, akumulasi asam laktat terlihat melonjak tajam dan mencapai puncak konsentrasi tertingginya pada titik koordinat waktu <b>...(A)...</b> Naiknya kadar zat tersebut di dalam jaringan otot terjadi akibat sel-sel otot terpaksa melakukan respirasi anaerob karena keterbatasan pasokan oksigen[span_97](start_span)[span_97](end_span). Namun, beberapa menit setelah atlet beristirahat duduk tenang, kadar asam laktat tersebut perlahan-lahan menurun kembali menuju batas normal yang salah satunya disebabkan oleh proses oksidasi ulang zat tersebut di organ <b>...(B)...</b>[span_98](start_span)[span_98](end_span)<br>
                 ${formatInstruction}`,
-        kunci: ["30 / 60", "insulin"]
+        kunci: ["4 menit", "hati"] // Sesuai: (A) 4 menit; (B) hati[span_99](start_span)[span_99](end_span)
     },
     { 
-        id: 16, subtes: "IPA - Paket 1", level: 3,
-        teks: `Dua buah benda berupa balok kayu murni, yaitu Balok X dengan massa 3 kg dan Balok Y dengan massa 2 kg, diletakkan berhimpitan di atas lantai mendatar yang licin tanpa gesekan. Sebuah gaya dorong horizontal <i>F</i> sebesar 15 N diberikan secara konstan.<br>
-                <div class="q-image-container"><img src="gambar-16.png" alt="[Gambar Gaya Dorong Balok X dan Y]"></div>
-                Jika gaya <i>F</i> mendorong Balok X ke arah kanan sehingga mendorong Balok Y, maka besar gaya kontak antara Balok X dan Balok Y adalah <b>...(A)...</b> Newton. Namun, jika gaya <i>F</i> dipindahkan untuk mendorong Balok Y ke arah kiri sehingga mendorong Balok X, maka besar gaya kontak antara kedua balok tersebut menjadi <b>...(B)...</b> Newton.<br>
+        id: 216, subtes: "IPA - Paket 2", level: 3,
+        teks: `Sebuah balok bermassa 4 kg mula-mula diam di atas permukaan lantai mendatar yang kasar dengan koefisien gesek statis 0,4 dan koefisien gesek kinetis 0,2[span_100](start_span)[span_100](end_span). Balok tersebut kemudian ditarik oleh dua buah gaya horizontal yang saling berlawanan arah[span_101](start_span)[span_101](end_span). Gaya $F_1$ sebesar 20 N diarahkan ke kanan, sedangkan gaya $F_2$ sebesar 10 N diarahkan ke kiri[span_102](start_span)[span_102](end_span). Percepatan gravitasi bumi adalah $g = 10\\ m/s^2$[span_103](start_span)[span_103](end_span).<br>
+                <div class="q-image-container"><img src="gambar-p2-16.png" alt="[Gambar Balok dengan Gaya]"></div>
+                Berdasarkan analisis resultan gaya dan gaya gesek maksimumnya, kondisi balok tersebut akan bergerak dengan percepatan sebesar <b>...(A)...</b> $m/s^2$[span_104](start_span)[span_104](end_span). Jika arah gaya $F_1$ dibalik menjadi ke kiri sedangkan gaya $F_2$ tetap ke kiri, maka kondisi balok akan bergerak dengan percepatan sebesar <b>...(B)...</b> $m/s^2$.[span_105](start_span)[span_105](end_span)<br>
                 ${formatInstruction}`,
-        kunci: ["6 / enam", "9 / sembilan"]
+        kunci: ["0", "5.5"] // Sesuai: (A) 0; (B) 5,5[span_106](start_span)[span_106](end_span)
     },
     { 
-        id: 17, subtes: "IPA - Paket 1", level: 3,
+        id: 217, subtes: "IPA - Paket 2", level: 3,
         teks: `Perhatikan gambar berikut!<br>
-                <div class="q-image-container"><img src="gambar-17.png" alt="[Gambar Balok pada Bidang Miring]"></div>
-                Dalam sebuah uji coba laboratorium fisika, sebuah balok kayu bermassa 1 kg (Balok X) dan sebuah balok kayu bermassa 3 kg (Balok Y) yang memiliki jenis permukaan bawah yang sama persis secara bergantian diletakkan di puncak sebuah bidang miring setinggi 50 cm. Kedua balok dilepaskan dari keadaan diam hingga meluncur turun menuju lantai permukaan semen yang kasar dan luas.<br><br>
-                Balok yang memiliki kecepatan lebih besar saat tepat menyentuh dasar lantai semen adalah <b>...(A)...</b>, sedangkan balok yang mampu meluncur dengan jarak pengereman paling jauh di atas lantai semen sebelum akhirnya berhenti adalah <b>...(B)...</b><br>
+                <div class="q-image-container"><img src="gambar-p2-17.png" alt="[Gambar Lintasan Melengkung Kelereng]"></div>
+                Rian melakukan eksperimen fisika menggunakan lintasan melengkung berbentuk lingkaran (setengah pipa) yang licin sempurna[span_107](start_span)[span_107](end_span). Ia melepas sebuah kelereng bermassa 20 gram secara bergantian dari tiga posisi sudut ketinggian vertikal yang berbeda dari dasar melengkung, yaitu pada ketinggian 15 cm, 30 cm, dan 45 cm[span_108](start_span)[span_108](end_span). Rian mengamati kecepatan kelereng menggunakan sensor <i>photogate</i> tepat saat melewati titik terendah lintasan melengkung tersebut[span_109](start_span)[span_109](end_span).<br>
+                Kelereng yang menunjukkan nilai energi kinetik terbesar sekaligus kecepatan paling tinggi saat melewati titik terendah lintasan melengkung adalah kelereng yang dilepas dari ketinggian <b>...(A)...</b> Jika setelah melewati titik terendah lintasan licin tersebut kelereng memasuki bidang datar kasar yang memiliki gaya gesek homogen, maka kelereng yang dilepas dari ketinggian <b>...(B)...</b> akan meluncur dan menempuh lintasan lurus paling jauh sebelum akhirnya berhenti total.[span_110](start_span)[span_110](end_span)<br>
                 ${formatInstruction}`,
-        kunci: ["keduanya sama besar / sama besar", "keduanya sama besar / sama besar"]
+        kunci: ["45 cm", "45 cm"] // Sesuai: (A) 45 cm; (B) 45 cm[span_111](start_span)[span_111](end_span)
     },
     { 
-        id: 18, subtes: "IPA - Paket 1", level: 2,
-        teks: `Sebuah tim konstruksi cilik melakukan simulasi pengangkatan material semen bermassa 20 kg setinggi 3 meter. Tim pertama menggunakan katrol bebas (katrol bergerak tunggal) untuk mengerek beban tersebut secara vertikal, sedangkan tim kedua memilih menggunakan sistem katrol majemuk yang memiliki 4 tali penyangga beban fungsional. Berdasarkan spesifikasi mekanis kedua jenis alat tersebut, tim <b>...(A)...</b> akan menarik tali penarik dengan jarak total helaan tali yang jauh lebih panjang untuk mencapai ketinggian target. Di sisi lain, tim <b>...(B)...</b> akan mengerahkan gaya tarik kuasa yang jauh lebih besar saat proses pengangkatan beban berlangsung.<br>
+        id: 218, subtes: "IPA - Paket 2", level: 2,
+        teks: `Dua kelompok siswa ditugaskan memindahkan sebuah kotak peralatan laboratorium bermassa 40 kg ke atas bak mobil pikap setinggi 1 meter[span_112](start_span)[span_112](end_span). Kelompok Alfa memilih menggunakan bidang miring berupa papan kayu sepanjang 2 meter, sedangkan kelompok Beta menggunakan papan kayu sepanjang 4 meter[span_113](start_span)[span_113](end_span). Kedua papan diletakkan pada ketinggian bak mobil yang sama persis dan diasumsikan licin sempurna[span_114](start_span)[span_114](end_span).<br>
+                Berdasarkan prinsip kesetimbangan usaha mekanis, kelompok <b>...(A)...</b> harus mendorong kotak dengan panjang lintasan atau tali penarik yang lebih panjang untuk menaikkan kotak tersebut[span_115](start_span)[span_115](end_span). Sementara itu, kelompok <b>...(B)...</b> akan membutuhkan gaya dorong kuasa yang lebih besar untuk memindahkan kotak peralatan ke atas bak mobil.[span_116](start_span)[span_116](end_span)<br>
                 ${formatInstruction}`,
-        kunci: ["kedua", "pertama"]
+        kunci: ["beta", "alfa"] // Sesuai: (A) Beta; (B) Alfa[span_117](start_span)[span_117](end_span)
     },
     { 
-        id: 19, subtes: "IPA - Paket 1", level: 1,
-        teks: `Cahaya matahari yang sampai ke bumi memainkan peran vital dalam mendukung fotosintesis tumbuhan dan menghangatkan planet. Berdasarkan rentang frekuensi atau panjang gelombangnya di dalam spektrum fisis, cahaya yang dapat diurai oleh prisma kaca menjadi warna pelangi dikelompokkan sebagai gelombang <b>...(A)...</b>. Sementara itu, berdasarkan karakteristik arah rambat energinya yang tegak lurus terhadap arah getar medan listrik dan medan magnetnya, cahaya diklasifikasikan sebagai gelombang <b>...(B)...</b><br>
+        id: 219, subtes: "IPA - Paket 2", level: 1,
+        teks: `Gelombang bunyi yang merambat melalui medium udara di sekitar kita memiliki karakteristik fisis yang unik dalam mentransfer energi mekanik[span_118](start_span)[span_118](end_span). Berdasarkan arah getar partikel medium terhadap arah rambat gelombangnya, gelombang bunyi diklasifikasikan sebagai gelombang <b>...(A)...</b> Sementara itu, jika gelombang bunyi tersebut dibandingkan dengan gelombang cahaya berdasarkan mutlak atau tidaknya kebutuhan akan partikel medium sebagai jalur perambatannya, maka gelombang bunyi dikelompokkan sebagai gelombang <b>...(B)...</b>[span_119](start_span)[span_119](end_span)<br>
                 ${formatInstruction}`,
-        kunci: ["tampak", "transversal"]
+        kunci: ["longitudinal", "mekanik"] // Sesuai: (A) longitudinal; (B) mekanik[span_120](start_span)[span_120](end_span)
     },
     { 
-        id: 20, subtes: "IPA - Paket 1", level: 2,
-        teks: `Evi berjalan di area parkir swalayan dan melihat sebuah cermin cembung besar (cermin tikungan) yang dipasang di sudut dinding. Ketika ia berdiri cukup jauh, ia melihat bayangan dirinya di dalam cermin tersebut terlihat sangat kecil namun areanya sangat luas, sehingga ia bisa melihat banyak mobil di belakangnya. Kaca spion dan cermin tikungan memanfaatkan cermin cembung karena sifat bayangannya yang selalu <b>...(A)...</b>. Alasan utama pemasangan cermin berpermukaan melengkung keluar ini pada kendaraan atau tikungan jalan adalah untuk mendapatkan bidang pandang yang <b>...(B)...</b><br>
+        id: 220, subtes: "IPA - Paket 2", level: 2,
+        teks: `Dono sedang mengamati spesimen jaringan daun menggunakan mikroskop cahaya di laboratorium sekolah[span_121](start_span)[span_121](end_span). Saat menggunakan lensa yang dekat dengan mata pengamat, ia menyadari bahwa bayangan akhir yang dihasilkan harus berukuran sangat besar agar sel-sel stomata terlihat jelas[span_122](start_span)[span_122](end_span). Lensa mikroskop yang berada di bagian paling atas (dekat mata Dono) tersebut dinamakan lensa <b>...(A)...</b> Agar mata Dono dapat mengamati spesimen dengan rileks tanpa berakomodasi, maka bayangan yang dibentuk oleh lensa bagian bawah (objektif) harus jatuh tepat di titik <b>...(B)...</b> dari lensa bagian atas tersebut.[span_123](start_span)[span_123](end_span)<br>
                 ${formatInstruction}`,
-        kunci: ["maya, tegak, diperkecil / maya tegak diperkecil / maya", "luas"]
+        kunci: ["okuler", "fokus"] // Sesuai: (A) okuler; (B) fokus[span_124](start_span)[span_124](end_span)
     }
 ];
+
+let BANK_SOAL = [];
 
 /* ================================================================
    LOGOS
@@ -534,7 +608,8 @@ const state = {
   showKickModal: false,       
   kickReason: '',
   finishedAt: null,
-  warnCount: 0
+  blockTimerHandle: null,
+  blockRemaining: 0
 };
 
 const app = document.getElementById('app');
@@ -556,53 +631,43 @@ function hitungStatistik(){
   return { total, dijawab, belum: total-dijawab, ragu };
 }
 
-// Fungsi Hitung Skor yang Adil dan Cerdas (Penilaian Parsial berdasar Level Kognitif)
 function hitungSkor() {
     let skorMentah = 0;
     let skorMaksimal = 0;
 
     BANK_SOAL.forEach(soal => {
         const bobot = soal.level; 
-        // Maksimal poin per soal adalah (bobot jawaban A + bobot jawaban B)
         skorMaksimal += (bobot * 2); 
 
         let jawabUser = (state.jawaban[soal.id] || "").toLowerCase().trim();
         let ansA = jawabUser;
         let ansB = jawabUser;
 
-        // Membelah/mengekstrak secara paksa bagian jawaban A dan B jika memungkinkan.
-        // Mencegah siswa rugi akibat format ketikan berdempetan atau typo sedikit.
-        const regexSplit = /\(?a\)?(.*?)(?:;|\||,|\n)?\s*\(?b\)?(.*)/is;
+        const regexSplit = /\\(?a\\)?(.*?)(?:;|\\||,|\n)?\\s*\\(?b\\)?(.*)/is;
         const match = jawabUser.match(regexSplit);
         if(match){
             ansA = match[1].trim();
             ansB = match[2].trim();
         }
 
-        // Fungsi pengecekan khusus: toleran untuk teks, tapi sangat ketat (exact) untuk angka murni
         const cekBenar = (kunciString, teksUser) => {
             const variasi = kunciString.split('/').map(k => k.trim());
             return variasi.some(opsi => {
-                // Jika kunci adalah angka pendek (misal: "1" atau "3"), gunakan regex word-boundary agar tidak tertipu angka "11" atau "30"
                 if (!isNaN(opsi) && opsi.length < 3) {
                     const regexBatasKata = new RegExp(`\\b${opsi}\\b`, 'i');
                     return regexBatasKata.test(teksUser);
                 }
-                // Jika teks biasa, selama termuat (includes), maka anggap benar
                 return teksUser.includes(opsi);
             });
         };
 
-        // Menghitung poin secara parsial per butir (A dan B dievaluasi terpisah)
         if (cekBenar(soal.kunci[0].toLowerCase(), ansA)) skorMentah += bobot;
         if (cekBenar(soal.kunci[1].toLowerCase(), ansB)) skorMentah += bobot;
     });
 
-    // Menghasilkan nilai akhir skala 100
     return Math.round((skorMentah / skorMaksimal) * 100);
 }
 
-// Penentuan Kategori & Motivasi
 function getScoreCategory(skor) {
     if (skor >= 95) return { name: "Sangat Baik", class: "sangat-baik", note: "Luar biasa! Penguasaan materi sains dan daya nalar (HOTS) kamu sangat mumpuni. Pertahankan prestasimu untuk meraih medali di tahap selanjutnya!" };
     if (skor >= 80) return { name: "Baik", class: "baik", note: "Kerja bagus! Kamu sudah memahami banyak konsep dasar dengan baik. Tingkatkan sedikit lagi ketelitianmu pada beberapa soal hitungan dan logika." };
@@ -633,7 +698,44 @@ function showToast(msg){
 }
 
 /* ================================================================
-   TIMER
+   SYSTEM BLOKIR 20 MENIT
+================================================================ */
+function checkBlockStatus() {
+    const expiry = localStorage.getItem('osnp_block_expiry');
+    if (expiry && parseInt(expiry) > Date.now()) {
+        state.screen = 'blocked';
+        startBlockTimer();
+        return true;
+    } else if (expiry) {
+        localStorage.removeItem('osnp_block_expiry');
+        localStorage.removeItem('osnp_violation_count');
+    }
+    return false;
+}
+
+function startBlockTimer() {
+    if (state.blockTimerHandle) clearInterval(state.blockTimerHandle);
+    state.blockTimerHandle = setInterval(() => {
+        const expiry = localStorage.getItem('osnp_block_expiry');
+        if (expiry) {
+            const rem = Math.ceil((parseInt(expiry) - Date.now()) / 1000);
+            if (rem <= 0) {
+                clearInterval(state.blockTimerHandle);
+                localStorage.removeItem('osnp_block_expiry');
+                localStorage.removeItem('osnp_violation_count');
+                state.screen = 'login';
+                render();
+            } else {
+                state.blockRemaining = rem;
+                const el = document.getElementById('blockCountdown');
+                if(el) el.textContent = formatWaktu(rem);
+            }
+        }
+    }, 1000);
+}
+
+/* ================================================================
+   TIMER UJIAN
 ================================================================ */
 function startTimer(){
   stopTimer();
@@ -658,7 +760,7 @@ function updateTimerDisplay(){
 }
 
 /* ================================================================
-   EVENT DELEGATION (Click & Input)
+   EVENT DELEGATION
 ================================================================ */
 app.addEventListener('click', (e)=>{
   const t = e.target.closest('[data-action]');
@@ -673,7 +775,11 @@ app.addEventListener('click', (e)=>{
   else if(action==='open-finish') { state.showFinishModal = true; render(); }
   else if(action==='cancel-finish') { state.showFinishModal = false; render(); }
   else if(action==='confirm-finish') { finishExam(false); }
-  else if(action==='close-kick-modal') { resetTerkick(); }
+  else if(action==='close-kick-modal') { 
+      state.showKickModal = false; 
+      state.screen = 'login'; 
+      render(); 
+  }
 });
 
 app.addEventListener('change', (e)=>{
@@ -731,7 +837,14 @@ function doLogin(){
     return;
   }
   state.peserta = { nama, kelas, sekolah, bidang, paket };
+  
+  BANK_SOAL = ALL_SOAL.filter(s => s.subtes === `IPA - ${paket}`);
+  
   state.screen = 'rules';
+  state.currentIndex = 0;
+  state.jawaban = {};
+  state.raguRagu = {};
+  state.sisaDetik = EXAM_CONFIG.durasiMenit * 60;
   render();
 }
 
@@ -765,17 +878,6 @@ function finishExam(autoBySystem){
   render();
 }
 
-function resetTerkick() {
-    state.showKickModal = false;
-    state.screen = 'login';
-    state.peserta = { nama:'', kelas:'', sekolah:'', bidang:'IPA', paket:'' };
-    state.currentIndex = 0;
-    state.jawaban = {};
-    state.raguRagu = {};
-    state.sisaDetik = EXAM_CONFIG.durasiMenit * 60;
-    render(); 
-}
-
 /* ================================================================
    RENDER — LOGIN
 ================================================================ */
@@ -802,16 +904,16 @@ function renderLogin(){
       <div class="card card-gold-edge login-card">
         <div class="field">
           <label for="inNama">Nama Lengkap</label>
-          <input id="inNama" type="text" placeholder="Tulis nama lengkap" autocomplete="off">
+          <input id="inNama" type="text" placeholder="Tulis nama lengkap" autocomplete="off" value="${state.peserta.nama}">
         </div>
         <div class="field" style="display:flex; gap:16px;">
             <div style="flex:1;">
                 <label for="inKelas">Kelas</label>
                 <select id="inKelas">
-                    <option value="" disabled selected>Pilih kelas</option>
-                    <option value="4">Kelas 4</option>
-                    <option value="5">Kelas 5</option>
-                    <option value="6">Kelas 6</option>
+                    <option value="" disabled ${!state.peserta.kelas?'selected':''}>Pilih kelas</option>
+                    <option value="4" ${state.peserta.kelas==='4'?'selected':''}>Kelas 4</option>
+                    <option value="5" ${state.peserta.kelas==='5'?'selected':''}>Kelas 5</option>
+                    <option value="6" ${state.peserta.kelas==='6'?'selected':''}>Kelas 6</option>
                 </select>
             </div>
             <div style="flex:2;">
@@ -825,20 +927,21 @@ function renderLogin(){
         </div>
         <div class="field">
           <label for="inSekolah">Asal Sekolah</label>
-          <input id="inSekolah" type="text" placeholder="Contoh: SDN 1 Nusantara" autocomplete="off">
+          <input id="inSekolah" type="text" placeholder="Contoh: SDN 1 Nusantara" autocomplete="off" value="${state.peserta.sekolah}">
         </div>
         <div class="field">
           <label for="inPaket">Pilih Paket Soal</label>
           <select id="inPaket">
-            <option value="Paket 1 - Prediksi Soal OSNP IPA SD 2026">Paket 1 - Prediksi Soal OSNP IPA SD 2026</option>
+            <option value="Paket 1" ${state.peserta.paket==='Paket 1'?'selected':''}>Paket 1 - Prediksi Soal OSNP IPA SD 2026</option>
+            <option value="Paket 2" ${state.peserta.paket==='Paket 2'?'selected':''}>Paket 2 - Prediksi Soal OSNP IPA SD 2026</option>
           </select>
         </div>
         <button class="btn btn-primary" data-action="login" style="margin-top:10px;">Lanjutkan</button>
       </div>
-      <p class="login-foot">Ini merupakan sistem simulasi/tryout untuk latihan menghadapi ${EXAM_CONFIG.namaUjian}.</p>
+      <p class="login-foot">Silakan pilih paket soal yang ditugaskan oleh guru pembinamu.</p>
     </div>
   </div>
-  <div class="footer-note">&copy; 2026 ${EXAM_CONFIG.namaLembaga}. Seluruh data peserta bersifat rahasia dan digunakan hanya untuk simulasi.</div>
+  <div class="footer-note">&copy; 2026 ${EXAM_CONFIG.namaLembaga}.</div>
   `;
 }
 
@@ -870,9 +973,9 @@ function renderRules(){
         <div class="peserta-row"><span class="k">Kelas</span><span class="v">Kelas ${p.kelas}</span></div>
         <div class="peserta-row"><span class="k">Asal Sekolah</span><span class="v">${p.sekolah}</span></div>
         <div class="peserta-row"><span class="k">Bidang</span><span class="v">${bidangLabel(p.bidang)}</span></div>
-        <div class="peserta-row"><span class="k">Paket</span><span class="v" style="font-size:11.5px;">${p.paket}</span></div>
-        <div class="peserta-row"><span class="k">Jumlah Soal</span><span class="v">${BANK_SOAL.length} Soal (Isian)</span></div>
-        <div class="peserta-row"><span class="k">Durasi</span><span class="v">${EXAM_CONFIG.durasiMenit} Menit (1 Jam)</span></div>
+        <div class="peserta-row"><span class="k">Paket Dipilih</span><span class="v" style="font-size:11.5px;">${p.paket}</span></div>
+        <div class="peserta-row"><span class="k">Jumlah Soal</span><span class="v">${BANK_SOAL.length} Soal (Isian Rumpang)</span></div>
+        <div class="peserta-row"><span class="k">Durasi</span><span class="v">${EXAM_CONFIG.durasiMenit} Menit</span></div>
       </div>
 
       <div class="card rules-card">
@@ -883,18 +986,16 @@ function renderRules(){
           <li><b>WAJIB</b> menjawab pertanyaan dengan format yang telah disediakan: <br><strong style="color:var(--crimson-700); background:#fcf0f0; padding:2px 6px; border-radius:4px;">*(A) [jawaban Anda] ; (B) [jawaban Anda]*</strong> sesuai dengan urutan huruf pertanyaan.</li>
           <li>Gunakan titik koma (;) sebagai pemisah antar jawaban.</li>
           <li>Jawaban Anda akan tersimpan secara otomatis setiap kali Anda mengetik di kolom jawaban yang disediakan.</li>
-          <li>Peserta dapat menekan tombol "Ragu-ragu" untuk menandai nomor soal yang ingin ditinjau kembali.</li>
-          <li>Segala bentuk kecurangan akan mengakibatkan diskualifikasi.</li>
+          <li>Segala bentuk perpindahan tab atau keluar layar penuh sebanyak 2 kali akan mengakibatkan <b>Pemblokiran Sistem selama 20 Menit</b>.</li>
         </ol>
         <div class="confirm-row">
           <input type="checkbox" id="acceptCheckbox">
-          <label for="acceptCheckbox">Saya telah membaca, memahami instruksi format jawaban, dan bersedia mematuhi tata tertib di atas.</label>
+          <label type="checkbox" for="acceptCheckbox">Saya telah membaca, memahami instruksi format jawaban, dan bersedia mematuhi tata tertib di atas.</label>
         </div>
         <button class="btn btn-primary" data-action="start-exam" disabled style="width:auto; padding:12px 26px;">Mulai Mengerjakan Soal</button>
       </div>
     </div>
   </div>
-  <div class="footer-note">Setelah menekan tombol mulai, sesi ujian dan penghitung waktu akan langsung aktif.</div>
   `;
 }
 
@@ -931,14 +1032,14 @@ function renderExam(){
         ${renderLogos(34)}
         <div>
           <div class="name">${EXAM_CONFIG.namaUjian}</div>
-          <div class="sub">${EXAM_CONFIG.tahap}</div>
+          <div class="sub">${state.peserta.paket} &middot; ${EXAM_CONFIG.tahap}</div>
         </div>
       </div>
       <div class="session-pill"><span class="session-dot"></span> Sesi Aktif</div>
       <div class="spacer"></div>
       <div class="participant-chip">
         <b>${state.peserta.nama}</b>
-        Kelas ${state.peserta.kelas} &middot; ${bidangLabel(state.peserta.bidang)}
+        Kelas ${state.peserta.kelas} &middot; ${state.peserta.sekolah}
       </div>
       <div>
         <div class="timer-label">Sisa Waktu</div>
@@ -952,7 +1053,7 @@ function renderExam(){
     <div class="card question-card">
       <div class="q-meta">
         <span class="q-subject">${soal.subtes}</span>
-        <span class="q-number">Soal <b>${state.currentIndex+1}</b> dari ${BANK_SOAL.length}</span>
+        <span class="q-number">Soal <b>${state.currentIndex+1}</b> dari ${BANK_SOAL.length} (Level Kognitif ${soal.level})</span>
       </div>
       <div class="q-text">${soal.teks}</div>
       
@@ -999,14 +1100,14 @@ function renderFinishModal(stat){
   <div class="overlay">
     <div class="modal">
       <h3>Akhiri Sesi Ujian?</h3>
-      <p>Pastikan seluruh jawaban Anda telah diperiksa dan sesuai dengan format isian singkat yang diminta. Setelah diakhiri, sesi ujian tidak dapat dilanjutkan kembali.</p>
+      <p>Pastikan seluruh jawaban Anda telah diperiksa. Setelah diakhiri, sesi ujian untuk paket ini tidak dapat dibuka kembali.</p>
       <div class="modal-stats">
         <div><b>${stat.dijawab}</b><span>Terjawab</span></div>
         <div><b>${stat.belum}</b><span>Kosong</span></div>
         <div><b>${stat.ragu}</b><span>Ragu-ragu</span></div>
       </div>
       <div class="modal-actions">
-        <button class="btn btn-outline" data-action="cancel-finish">Batal, Kembali</button>
+        <button class="btn btn-outline" data-action="cancel-finish">Batal</button>
         <button class="btn btn-danger" data-action="confirm-finish">Ya, Selesaikan</button>
       </div>
     </div>
@@ -1015,26 +1116,43 @@ function renderFinishModal(stat){
 }
 
 /* ================================================================
-   RENDER — KICK MODAL (ANTI-CHEAT)
+   RENDER — PEEK / KICK / BLOCKED
 ================================================================ */
 function renderKickModal(){
   return `
   <div class="overlay" style="z-index:9999;">
-    <div class="modal" style="border-top-color: var(--crimson-700); text-align: center;">
-      <div class="stamp stamp-anim" style="margin:0 auto 16px; width:70px; height:70px; border-color:var(--crimson-700); color:var(--crimson-700);">
-        <span class="l2" style="font-size:11px;">KICKED</span>
+    <div class="modal" style="border-top-color: var(--gold-500); text-align: center;">
+      <div class="stamp stamp-anim" style="margin:0 auto 16px; width:70px; height:70px; border-color:var(--gold-500); color:var(--gold-500);">
+        <span class="l2" style="font-size:11px;">WARNING</span>
       </div>
-      <h3 style="color: var(--crimson-700); font-size: 20px;">Sesi Ujian Dibatalkan!</h3>
-      <p style="color: var(--ink-900);">Sistem mendeteksi aktivitas yang tidak diizinkan selama ujian berlangsung.</p>
-      
-      <div style="background: #fcf0f0; border: 1px solid #f2c7c9; padding: 14px; border-radius: 5px; margin: 18px 0; color: var(--crimson-700); font-size: 13.5px; text-align: left; line-height: 1.5;">
-        <b>Alasan Pelanggaran:</b><br>${state.kickReason}
+      <h3>Peringatan Pelanggaran!</h3>
+      <div style="background: #fbfcfe; border: 1px solid var(--line); border-left: 4px solid var(--gold-500); padding: 14px; border-radius: 5px; margin: 18px 0; color: var(--navy-900); font-size: 13.5px; text-align: left; line-height: 1.5;">
+        ${state.kickReason}
       </div>
-      
-      <button class="btn btn-danger" style="width:100%;" data-action="close-kick-modal">Kembali ke Halaman Login</button>
+      <button class="btn btn-primary" style="width:100%;" data-action="close-kick-modal">Kembali ke Ujian</button>
     </div>
   </div>
   `;
+}
+
+function renderBlocked() {
+    const expiry = localStorage.getItem('osnp_block_expiry');
+    const rem = expiry ? Math.max(0, Math.ceil((parseInt(expiry) - Date.now()) / 1000)) : 0;
+    return `
+    <div class="blocked-screen">
+      <div class="blocked-box">
+        <div class="stamp stamp-anim" style="margin:0 auto 20px; border-color:#ff4d4f; color:#ff4d4f; width:90px; height:90px;">
+          <span class="l2" style="font-size:14px;">BLOCKED</span>
+        </div>
+        <h2>Akses Perangkat Ditangguhkan</h2>
+        <p>Sistem mendeteksi pelanggaran aturan layar ujian secara berulang pada perangkat ini.<br>Alamat IP Anda: <b style="color:#fff; font-family:var(--font-mono);">${clientIP}</b> terblokir sementara.</p>
+        <div class="block-timer-wrap">
+           <div class="lbl">Sisa Waktu Hukuman</div>
+           <div class="val" id="blockCountdown">${formatWaktu(rem)}</div>
+        </div>
+      </div>
+    </div>
+    `;
 }
 
 function renderSidebarOnly(){
@@ -1044,13 +1162,11 @@ function renderSidebarOnly(){
 }
 
 /* ================================================================
-   RENDER — FINISHED (DENGAN SKOR DAN MOTIVASI)
+   RENDER — FINISHED
 ================================================================ */
 function renderFinished(){
   const stat = hitungStatistik();
   const waktuTerpakai = EXAM_CONFIG.durasiMenit*60 - state.sisaDetik;
-  
-  // Ambil data skor dan kategori penilaian (sistem penilaian adil/parsial)
   const skor = hitungSkor();
   const cat = getScoreCategory(skor);
 
@@ -1061,7 +1177,7 @@ function renderFinished(){
       <div class="ribbon-titles">
         <p class="ribbon-eyebrow">${EXAM_CONFIG.namaLembaga}</p>
         <h1 class="ribbon-title">${EXAM_CONFIG.namaUjian}</h1>
-        <p class="ribbon-sub">${EXAM_CONFIG.tahap}</p>
+        <p class="ribbon-sub">${state.peserta.paket} &middot; Selesai</p>
       </div>
     </div>
   </div>
@@ -1069,14 +1185,12 @@ function renderFinished(){
     <div class="finish-wrap">
       <div class="card card-gold-edge finish-card">
         <div class="stamp stamp-anim" style="margin:0 auto;">
-          <span class="l1">Resmi</span>
+          <span class="l1">Simulasi</span>
           <span class="l2">SELESAI</span>
-          <span class="l3">OSNP SD 2026</span>
+          <span class="l3">OSNP 2026</span>
         </div>
-        <h2>Ujian Telah Selesai</h2>
-        <p style="margin-bottom:12px;">${state.autoFinished ? 'Waktu pengerjaan telah habis dan sesi diakhiri otomatis oleh sistem.' : 'Terima kasih, seluruh rekaman jawaban format isian Anda telah tersimpan ke dalam sistem.'}</p>
+        <h2>Evaluasi Hasil Ujian</h2>
         
-        <!-- BAGIAN SKOR DAN CATATAN -->
         <div class="score-board">
            <div class="score-circle">
               <span class="val">${skor}</span>
@@ -1085,88 +1199,63 @@ function renderFinished(){
            <div class="score-category ${cat.class}">${cat.name}</div>
            <div class="score-note">${cat.note}</div>
         </div>
-        <!-- END BAGIAN SKOR -->
 
         <div class="stat-grid">
           <div class="stat-box"><b>${stat.dijawab}</b><span>Terjawab</span></div>
           <div class="stat-box"><b>${stat.ragu}</b><span>Ragu-ragu</span></div>
-          <div class="stat-box"><b>${formatWaktu(waktuTerpakai)}</b><span>Waktu Terpakai</span></div>
+          <div class="stat-box"><b>${formatWaktu(waktuTerpakai)}</b><span>Waktu</span></div>
         </div>
-        <p style="font-size:11.5px;">Peserta: <b>${state.peserta.nama}</b> &middot; Kelas ${state.peserta.kelas} &middot; ${state.peserta.sekolah}</p>
+        <p style="font-size:12px; color:var(--ink-600);">Peserta: <b>${state.peserta.nama}</b> (${state.peserta.sekolah})</p>
+        <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="window.location.reload();">Kembali ke Menu Utama</button>
       </div>
     </div>
   </div>
-  <div class="footer-note">Mohon tetap tenang di tempat duduk hingga pengawas memberikan instruksi selanjutnya.</div>
   `;
 }
 
 /* ================================================================
-   MAIN RENDER DISPATCH
+   DISPATCHER & SECURITY
 ================================================================ */
 function render(){
   let html = '';
-  if(state.screen==='login') html = renderLogin();
-  else if(state.screen==='rules') html = renderRules();
-  else if(state.screen==='exam') html = renderExam();
-  else if(state.screen==='finished') html = renderFinished();
+  if (state.screen === 'blocked') html = renderBlocked();
+  else if (state.screen === 'login') html = renderLogin();
+  else if(state.screen === 'rules') html = renderRules();
+  else if(state.screen === 'exam') html = renderExam();
+  else if(state.screen === 'finished') html = renderFinished();
   
-  if(state.showKickModal) html += renderKickModal();
-  
+  if(state.showKickModal && state.screen !== 'blocked') html += renderKickModal();
   app.innerHTML = html;
   if(state.screen==='exam' && !state.showKickModal) updateTimerDisplay();
 }
 
-render();
+if (!checkBlockStatus()) render();
 
-/* ================================================================
-   SISTEM KEAMANAN KETAT (ANTI-CHEAT)
-================================================================ */
 function kickOutPeserta(alasan) {
-    if(state.showKickModal) return; 
-    
+    if(state.showKickModal || state.screen === 'blocked') return; 
     stopTimer(); 
+    if(document.exitFullscreen && document.fullscreenElement) document.exitFullscreen().catch(()=>{});
     
-    if(document.exitFullscreen && document.fullscreenElement){
-        document.exitFullscreen().catch(()=>{});
+    let pelanggaran = parseInt(localStorage.getItem('osnp_violation_count') || '0') + 1;
+    localStorage.setItem('osnp_violation_count', pelanggaran);
+    
+    if (pelanggaran >= 2) {
+        const expiryTime = Date.now() + 20 * 60 * 1000;
+        localStorage.setItem('osnp_block_expiry', expiryTime);
+        state.screen = 'blocked';
+        state.showKickModal = false;
+        startBlockTimer();
+        render();
+    } else {
+        state.kickReason = `<b>Alasan Deteksi:</b><br>${alasan}<br><br><b style="color:var(--crimson-700);">Peringatan Ke-1!</b> Jika Anda melakukan pelanggaran sekali lagi, sistem IP-Block 20 menit akan aktif otomatis.`;
+        state.showKickModal = true;
+        render(); 
     }
-    
-    state.kickReason = alasan;
-    state.showKickModal = true;
-    
-    render(); 
 }
 
-document.addEventListener('visibilitychange', () => {
-    if (state.screen === 'exam' && document.hidden) {
-        kickOutPeserta("Berpindah tab atau meminimalkan jendela browser.");
-    }
-});
-
-window.addEventListener('blur', () => {
-    if (state.screen === 'exam') {
-        kickOutPeserta("Membuka aplikasi lain, klik di luar area ujian, atau menggunakan *shortcut* yang tidak diizinkan.");
-    }
-});
-
-document.addEventListener('fullscreenchange', () => {
-    if (state.screen === 'exam' && !document.fullscreenElement) {
-        kickOutPeserta("Keluar dari mode Layar Penuh (Full Screen).");
-    }
-});
-
-window.addEventListener('beforeunload', (e) => {
-    if (state.screen === 'exam' && !state.showKickModal) {
-        e.preventDefault();
-        e.returnValue = '';
-    }
-});
-
-document.addEventListener('contextmenu', (e) => {
-    if (state.screen === 'exam') {
-        e.preventDefault();
-        showToast("Tindakan ini (Klik Kanan) dinonaktifkan demi keamanan.");
-    }
-});
+document.addEventListener('visibilitychange', () => { if (state.screen === 'exam' && document.hidden) kickOutPeserta("Meninggalkan tab lembar ujian."); });
+window.addEventListener('blur', () => { if (state.screen === 'exam') kickOutPeserta("Kehilangan fokus jendela (Membuka aplikasi lain)."); });
+document.addEventListener('fullscreenchange', () => { if (state.screen === 'exam' && !document.fullscreenElement) kickOutPeserta("Keluar dari mode layar penuh wajib."); });
 </script>
 </body>
 </html>
