@@ -464,17 +464,14 @@ const BANK_SOAL = [
 ];
 
 /* ================================================================
-   EMBLEM (SVG asli/abstrak — bukan lambang negara)
+   LOGOS (Menggantikan fungsi emblemSVG)
 ================================================================ */
-function emblemSVG(size){
-  size = size || 56;
-  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <circle cx="50" cy="50" r="47" fill="none" stroke="#c9a227" stroke-width="3"/>
-    <circle cx="50" cy="50" r="40" fill="#0b2545" stroke="#c9a227" stroke-width="1.4"/>
-    <path d="M50 23 L54.5 39 L71 39 L57.7 49.2 L62.8 65.5 L50 55.6 L37.2 65.5 L42.3 49.2 L29 39 L45.5 39 Z" fill="#c9a227"/>
-    <path d="M18 66 Q30 55 19 38" stroke="#c9a227" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-    <path d="M82 66 Q70 55 81 38" stroke="#c9a227" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-  </svg>`;
+function renderLogos(size) {
+  return `
+  <div style="display:flex; align-items:center; gap:8px;" class="ribbon-emblem">
+    <img src="8BF1E729-83A3-49C3-BBD8-EDB9617E1777.jpeg" alt="Logo OSN" style="width:${size}px; height:${size}px; border-radius:8px; object-fit:contain; background:#fff; padding:2px; box-shadow:0 2px 4px rgba(0,0,0,0.15);">
+    <img src="D90B620B-1EF3-4E9A-9486-3BE2E3E69F2D.jpeg" alt="Logo AzkaTeam" style="width:${size}px; height:${size}px; border-radius:8px; object-fit:contain; background:#fff; padding:2px; box-shadow:0 2px 4px rgba(0,0,0,0.15);">
+  </div>`;
 }
 
 /* ================================================================
@@ -688,7 +685,7 @@ function renderLogin(){
   return `
   <div class="ribbon">
     <div class="ribbon-inner">
-      ${emblemSVG(48)}
+      ${renderLogos(48)}
       <div class="ribbon-titles">
         <p class="ribbon-eyebrow">${EXAM_CONFIG.namaLembaga}</p>
         <h1 class="ribbon-title">${EXAM_CONFIG.namaUjian}</h1>
@@ -755,7 +752,7 @@ function renderRules(){
   return `
   <div class="ribbon">
     <div class="ribbon-inner">
-      ${emblemSVG(48)}
+      ${renderLogos(48)}
       <div class="ribbon-titles">
         <p class="ribbon-eyebrow">${EXAM_CONFIG.namaLembaga}</p>
         <h1 class="ribbon-title">${EXAM_CONFIG.namaUjian}</h1>
@@ -833,7 +830,7 @@ function renderExam(){
   <div class="exam-topbar">
     <div class="exam-topbar-inner">
       <div class="exam-brand">
-        ${emblemSVG(34)}
+        ${renderLogos(34)}
         <div>
           <div class="name">${EXAM_CONFIG.namaUjian}</div>
           <div class="sub">${EXAM_CONFIG.tahap}</div>
@@ -959,7 +956,7 @@ function renderFinished(){
   return `
   <div class="ribbon">
     <div class="ribbon-inner">
-      ${emblemSVG(48)}
+      ${renderLogos(48)}
       <div class="ribbon-titles">
         <p class="ribbon-eyebrow">${EXAM_CONFIG.namaLembaga}</p>
         <h1 class="ribbon-title">${EXAM_CONFIG.namaUjian}</h1>
