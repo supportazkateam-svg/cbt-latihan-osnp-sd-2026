@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulasi CBT — Seleksi OSNP SD 2026</title>
+<style>
+  :root{
+    --navy-900:#081b3a;
+    --navy-800:#0b2545;
+    --navy-700:#13315c;
+    --navy-600:#1b3a6b;
+    --gold-500:#c9a227;
+    --gold-400:#d9bb55;
+    --gold-100:#f6ecc9;
+    --crimson-600:#b3242a;
+    --crimson-700:#8f1b20;
+    --green-600:#1f7a54;
+    --green-100:#e3f3ec;
+    --bg:#eef1f7;
+    --paper:#ffffff;
+    --ink-900:#10182b;
+    --ink-600:#45506b;
+    --ink-400:#7480a0;
+    --line:#d8deE9;
+    --font-display:Georgia,'Times New Roman',serif;
+    --font-body:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
+    --font-mono:'SF Mono','Consolas','Roboto Mono',monospace;
+    --shadow-card:0 10px 30px -10px rgba(11,37,69,.25);
+    --shadow-soft:0 2px 10px rgba(11,37,69,.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #12336b 0%, rgba(18,51,107,0) 60%),
+      radial-gradient(1000px 500px at 110% 10%, #0f2c58 0%, rgba(15,44,88,0) 55%),
+      var(--bg);
+    font-family:var(--font-body);
+    color:var(--ink-900);
+    -webkit-font-smoothing:antialiased;
+  }
+  #app{min-height:100vh; display:flex; flex-direction:column;}
+  a{color:inherit;}
+  button{font-family:inherit;}
+  ::selection{background:var(--gold-400); color:var(--navy-900);}
+
+  /* focus visibility */
+  button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
+    outline:3px solid var(--gold-500);
+    outline-offset:2px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+  }
+
+  /* ===================== HEADER RIBBON ===================== */
+  .ribbon{
+    background:linear-gradient(180deg,var(--navy-700),var(--navy-900));
+    border-bottom:3px solid var(--gold-500);
+    color:#fff;
+    box-shadow:var(--shadow-soft);
+  }
+  .ribbon-inner{
+    max-width:1180px; margin:0 auto;
+    padding:14px 22px;
+    display:flex; align-items:center; gap:16px;
+  }
+  .ribbon-emblem{flex:0 0 auto; filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));}
+  .ribbon-titles{flex:1 1 auto; min-width:0;}
+  .ribbon-eyebrow{
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--gold-400); font-weight:700; margin:0 0 2px;
+  }
+  .ribbon-title{
+    font-family:var(--font-display); font-size:20px; margin:0; line-height:1.25;
+    letter-spacing:.01em;
+  }
+  .ribbon-sub{margin:2px 0 0; font-size:12.5px; color:#c9d4ec;}
+  .ribbon-meta{
+    flex:0 0 auto; text-align:right; font-size:12px; color:#c9d4ec;
+    display:flex; flex-direction:column; gap:2px;
+  }
+
+  /* ===================== LAYOUT WRAPPERS ===================== */
+  .stage{
+    flex:1 1 auto; display:flex; align-items:flex-start; justify-content:center;
+    padding:38px 18px 30px;
+  }
+  .stage.center{align-items:center;}
+  .footer-note{
+    text-align:center; font-size:11.5px; color:var(--ink-400);
+    padding:14px 10px 22px;
+  }
+
+  /* ===================== CARD / PAPER ===================== */
+  .card{
+    background:var(--paper);
+    border-radius:6px;
+    box-shadow:var(--shadow-card);
+    border:1px solid var(--line);
+    position:relative;
+  }
+  .card-gold-edge{
+    border-top:4px solid var(--gold-500);
+  }
+
+  /* ===================== LOGIN SCREEN ===================== */
+  .login-wrap{width:100%; max-width:460px;}
+  .login-head{text-align:center; margin-bottom:18px;}
+  .login-head .kicker{
+    font-size:11.5px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--navy-700); font-weight:700;
+  }
+  .login-head h1{
+    font-family:var(--font-display); font-size:24px; margin:6px 0 2px; color:var(--navy-900);
+  }
+  .login-head p{margin:0; font-size:13px; color:var(--ink-600);}
+  .login-card{padding:30px 30px 26px;}
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block; font-size:12.5px; font-weight:700; color:var(--navy-800);
+    margin-bottom:6px; letter-spacing:.01em;
+  }
+  .field input{
+    width:100%; padding:11px 13px; border:1.5px solid var(--line); border-radius:4px;
+    font-size:14.5px; color:var(--ink-900); background:#fbfcfe;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .field input:focus{
+    outline:none; border-color:var(--navy-600); box-shadow:0 0 0 3px rgba(19,49,92,.12);
+    background:#fff;
+  }
+  .field select{
+    width:100%; padding:11px 13px; border:1.5px solid var(--line); border-radius:4px;
+    font-size:14.5px; color:var(--ink-900); background:#fbfcfe;
+    transition:border-color .15s, box-shadow .15s; cursor:pointer;
+  }
+  .field select:focus{
+    outline:none; border-color:var(--navy-600); box-shadow:0 0 0 3px rgba(19,49,92,.12);
+    background:#fff;
+  }
+  .field select option:disabled{color:var(--ink-400);}
+  .field .hint{font-size:11px; color:var(--ink-400); margin-top:4px;}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    border:none; border-radius:4px; cursor:pointer; font-weight:700;
+    font-size:14px; padding:12px 22px; transition:transform .08s, box-shadow .15s, background .15s;
+    letter-spacing:.01em;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{
+    background:linear-gradient(180deg,var(--navy-600),var(--navy-800));
+    color:#fff; width:100%; box-shadow:0 6px 16px -6px rgba(11,37,69,.55);
+  }
+  .btn-primary:hover{background:linear-gradient(180deg,var(--navy-700),var(--navy-900));}
+  .btn-primary:disabled{background:#aab3c4; cursor:not-allowed; box-shadow:none;}
+  .btn-gold{
+    background:linear-gradient(180deg,var(--gold-400),var(--gold-500));
+    color:var(--navy-900);
+  }
+  .btn-outline{
+    background:transparent; border:1.5px solid var(--line); color:var(--ink-600);
+  }
+  .btn-danger{background:linear-gradient(180deg,#c33138,var(--crimson-700)); color:#fff;}
+  .login-foot{
+    text-align:center; margin-top:16px; font-size:11.5px; color:var(--ink-400);
+  }
+  .id-line{
+    display:flex; align-items:center; gap:10px; justify-content:center; margin-top:10px;
+  }
+  .id-line .dot{width:6px;height:6px;border-radius:50%;background:var(--green-600);}
+
+  /* ===================== RULES SCREEN ===================== */
+  .rules-wrap{width:100%; max-width:900px; display:grid; grid-template-columns:280px 1fr; gap:22px;}
+  @media (max-width:800px){ .rules-wrap{grid-template-columns:1fr;} }
+  .peserta-card{padding:22px;}
+  .peserta-card h3{
+    font-family:var(--font-display); font-size:16px; margin:0 0 14px; color:var(--navy-900);
+    border-bottom:1px solid var(--line); padding-bottom:10px;
+  }
+  .peserta-row{display:flex; justify-content:space-between; gap:10px; font-size:13px; padding:6px 0; border-bottom:1px dashed var(--line);}
+  .peserta-row:last-child{border-bottom:none;}
+  .peserta-row .k{color:var(--ink-400);}
+  .peserta-row .v{font-weight:700; color:var(--navy-900); text-align:right;}
+  .seal-corner{
+    position:absolute; top:-16px; right:-14px;
+  }
+  .rules-card{padding:26px 28px; position:relative; overflow:hidden;}
+  .rules-card h2{
+    font-family:var(--font-display); font-size:19px; margin:0 0 14px; color:var(--navy-900);
+  }
+  .rules-card ol{margin:0 0 18px; padding-left:20px; font-size:13.5px; line-height:1.65; color:var(--ink-900);}
+  .rules-card ol li{margin-bottom:8px;}
+  .confirm-row{
+    display:flex; align-items:flex-start; gap:10px; background:#f5f7fb; border:1px solid var(--line);
+    border-radius:5px; padding:12px 14px; margin-bottom:16px;
+  }
+  .confirm-row input{margin-top:3px;}
+  .confirm-row label{font-size:13px; color:var(--ink-600); line-height:1.5;}
+
+  /* ===================== STAMP / SEAL ===================== */
+  .stamp{
+    width:112px; height:112px; border-radius:50%;
+    border:3px double var(--crimson-600);
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    color:var(--crimson-600); font-family:var(--font-display); font-weight:700;
+    transform:rotate(-9deg); text-align:center; line-height:1.1; letter-spacing:.03em;
+    background:rgba(179,36,42,0.03);
+  }
+  .stamp .l1{font-size:10px; letter-spacing:.18em; text-transform:uppercase;}
+  .stamp .l2{font-size:15px; margin:3px 0;}
+  .stamp .l3{font-size:9px; letter-spacing:.12em;}
+  .stamp-anim{animation:stampIn .55s cubic-bezier(.2,1.4,.4,1) both;}
+  @keyframes stampIn{
+    0%{opacity:0; transform:scale(2.6) rotate(-18deg);}
+    70%{opacity:1;}
+    100%{opacity:1; transform:scale(1) rotate(-9deg);}
+  }
+
+  /* ===================== EXAM SCREEN ===================== */
+  .exam-topbar{
+    background:linear-gradient(180deg,var(--navy-700),var(--navy-900));
+    border-bottom:3px solid var(--gold-500);
+    color:#fff; position:sticky; top:0; z-index:20;
+  }
+  .exam-topbar-inner{
+    max-width:1180px; margin:0 auto; padding:10px 20px;
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  }
+  .exam-brand{display:flex; align-items:center; gap:10px; min-width:0;}
+  .exam-brand .name{font-size:13px; font-weight:700; white-space:nowrap;}
+  .exam-brand .sub{font-size:10.5px; color:var(--gold-400);}
+  .session-pill{
+    display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.18); padding:4px 10px; border-radius:20px; font-size:11px;
+  }
+  .session-dot{width:7px;height:7px;border-radius:50%;background:#31d68a; box-shadow:0 0 0 3px rgba(49,214,138,.25);
+    animation:pulse 1.8s infinite;}
+  @keyframes pulse{0%{opacity:1;}50%{opacity:.4;}100%{opacity:1;}}
+  .spacer{flex:1 1 auto;}
+  .participant-chip{font-size:12px; text-align:right; margin-right:6px;}
+  .participant-chip b{display:block; font-size:13px;}
+  .timer-box{
+    font-family:var(--font-mono); background:var(--navy-900); border:1px solid rgba(255,255,255,.15);
+    padding:8px 14px; border-radius:5px; font-size:19px; letter-spacing:.05em; font-weight:700;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
+  }
+  .timer-label{font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--gold-400); text-align:center; margin-bottom:2px; font-family:var(--font-body);}
+  .timer-box.warn{color:#ffb3b3; border-color:#c33138; animation:pulse 1s infinite;}
+  .btn-finish{padding:9px 16px; font-size:12.5px;}
+
+  .exam-body{
+    max-width:1180px; margin:0 auto; width:100%;
+    padding:22px 20px 60px;
+    display:grid; grid-template-columns:1fr 300px; gap:22px; align-items:start;
+  }
+  @media (max-width:900px){ .exam-body{grid-template-columns:1fr;} }
+
+  .question-card{padding:26px 30px 22px;}
+  .q-meta{
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;
+    padding-bottom:14px; border-bottom:1px solid var(--line); flex-wrap:wrap; gap:8px;
+  }
+  .q-subject{
+    font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    color:#fff; background:var(--navy-700); padding:5px 11px; border-radius:20px;
+  }
+  .q-number{font-size:13px; color:var(--ink-400);}
+  .q-number b{color:var(--navy-900);}
+  .q-text{font-size:16px; line-height:1.7; color:var(--ink-900); margin-bottom:22px;}
+  .options{display:flex; flex-direction:column; gap:10px; margin-bottom:20px;}
+  .option{
+    display:flex; align-items:flex-start; gap:12px; padding:12px 15px;
+    border:1.5px solid var(--line); border-radius:5px; cursor:pointer;
+    transition:border-color .12s, background .12s;
+    background:#fff;
+  }
+  .option:hover{border-color:var(--navy-600); background:#f7f9fc;}
+  .option.selected{
+    border-color:var(--gold-500); background:var(--gold-100);
+  }
+  .option .letter{
+    flex:0 0 auto; width:28px; height:28px; border-radius:50%; border:1.5px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;
+    color:var(--ink-600); background:#f5f7fb;
+  }
+  .option.selected .letter{background:var(--gold-500); border-color:var(--gold-500); color:var(--navy-900);}
+  .option .txt{font-size:14.5px; padding-top:4px; color:var(--ink-900); line-height:1.5;}
+  .flag-row{
+    display:flex; align-items:center; gap:9px; padding:11px 14px; background:#fff8ec;
+    border:1px solid var(--gold-400); border-radius:5px; font-size:13px; color:var(--navy-800);
+  }
+  .flag-row input{width:16px; height:16px;}
+  .qnav{
+    display:flex; justify-content:space-between; margin-top:22px; gap:10px;
+  }
+
+  /* ===================== SIDEBAR NAVIGATOR ===================== */
+  .side-card{padding:18px 18px 20px; position:sticky; top:86px;}
+  .side-title{font-size:12px; font-weight:700; color:var(--navy-900); letter-spacing:.03em; margin-bottom:10px;
+    display:flex; align-items:center; justify-content:space-between;}
+  .side-progress{height:6px; background:#e7ebf3; border-radius:4px; overflow:hidden; margin-bottom:14px;}
+  .side-progress-bar{height:100%; background:linear-gradient(90deg,var(--navy-600),var(--gold-500)); transition:width .25s;}
+  .legend{display:flex; flex-wrap:wrap; gap:8px; font-size:10.5px; color:var(--ink-600); margin-bottom:14px;}
+  .legend span{display:flex; align-items:center; gap:4px;}
+  .legend i{width:10px; height:10px; border-radius:3px; display:inline-block; border:1px solid var(--line);}
+  .subj-group{margin-bottom:12px;}
+  .subj-group .label{font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-400); margin-bottom:6px;}
+  .num-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:6px;}
+  .num-btn{
+    aspect-ratio:1/1; border-radius:4px; border:1.5px solid var(--line); background:#fff;
+    font-size:12.5px; font-weight:700; color:var(--ink-600); cursor:pointer; position:relative;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .num-btn.answered{background:var(--navy-700); border-color:var(--navy-700); color:#fff;}
+  .num-btn.flagged::after{
+    content:''; position:absolute; top:-3px; right:-3px; width:9px; height:9px; border-radius:50%;
+    background:var(--gold-500); border:1.5px solid #fff;
+  }
+  .num-btn.current{outline:2.5px solid var(--crimson-600); outline-offset:2px;}
+  .side-finish{margin-top:16px;}
+
+  /* ===================== MODAL ===================== */
+  .overlay{
+    position:fixed; inset:0; background:rgba(8,20,45,.55); z-index:60;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+    animation:fadeIn .18s ease-out both;
+  }
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  .modal{
+    background:#fff; border-radius:6px; max-width:420px; width:100%; padding:26px 26px 22px;
+    box-shadow:0 30px 60px -15px rgba(0,0,0,.4); border-top:4px solid var(--crimson-600);
+  }
+  .modal h3{font-family:var(--font-display); margin:0 0 10px; font-size:18px; color:var(--navy-900);}
+  .modal p{font-size:13.5px; color:var(--ink-600); line-height:1.6; margin:0 0 8px;}
+  .modal-stats{display:flex; gap:14px; margin:14px 0; padding:12px 14px; background:#f5f7fb; border-radius:5px;}
+  .modal-stats div{flex:1; text-align:center;}
+  .modal-stats b{display:block; font-size:19px; color:var(--navy-900);}
+  .modal-stats span{font-size:10.5px; color:var(--ink-400); text-transform:uppercase; letter-spacing:.05em;}
+  .modal-actions{display:flex; gap:10px; margin-top:16px;}
+  .modal-actions .btn{flex:1;}
+
+  /* ===================== TOAST ===================== */
+  .toast{
+    position:fixed; top:16px; left:50%; transform:translateX(-50%);
+    background:var(--crimson-700); color:#fff; padding:10px 18px; border-radius:5px;
+    font-size:12.5px; box-shadow:0 8px 20px rgba(0,0,0,.25); z-index:100;
+    animation:toastIn .2s ease-out both;
+  }
+  @keyframes toastIn{from{opacity:0; transform:translate(-50%,-10px);} to{opacity:1; transform:translate(-50%,0);}}
+
+  /* ===================== FINISHED SCREEN ===================== */
+  .finish-wrap{width:100%; max-width:460px; text-align:center;}
+  .finish-card{padding:34px 30px 30px;}
+  .finish-card h2{font-family:var(--font-display); font-size:22px; margin:16px 0 6px; color:var(--navy-900);}
+  .finish-card p{font-size:13.5px; color:var(--ink-600); margin:0 0 20px;}
+  .stat-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:22px;}
+  .stat-box{background:#f5f7fb; border:1px solid var(--line); border-radius:6px; padding:12px 8px;}
+  .stat-box b{display:block; font-size:20px; color:var(--navy-900);}
+  .stat-box span{font-size:10px; color:var(--ink-400); text-transform:uppercase; letter-spacing:.04em;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ================================================================
+   KONFIGURASI UJIAN
+================================================================ */
+const EXAM_CONFIG = {
+  namaLembaga: "Panitia Seleksi OSNP Sekolah Dasar",
+  namaUjian: "Seleksi OSNP SD 2026",
+  tahap: "Simulasi Tryout — Tahap Sekolah",
+  durasiMenit: 90
+};
+
+/* ================================================================
+   BANK SOAL
+   ----------------------------------------------------------------
+   Ini adalah tempat menaruh soal. Soal di bawah ini HANYA CONTOH
+   agar tampilan sistem dapat langsung dicoba. Silakan ganti/ tambah
+   isi array BANK_SOAL dengan soal asli begitu tersedia.
+
+   Format setiap soal:
+   {
+     id      : nomor urut (integer, unik, mulai dari 1),
+     subtes  : nama mata pelajaran/subtes,
+     teks    : teks pertanyaan,
+     pilihan : { A:"...", B:"...", C:"...", D:"..." }
+   }
+================================================================ */
+const BANK_SOAL = [
+  { id:1, subtes:"Makhluk Hidup", teks:"(Contoh) Proses tumbuhan membuat makanannya sendiri dengan bantuan cahaya matahari disebut ...", pilihan:{A:"Respirasi",B:"Fotosintesis",C:"Fermentasi",D:"Transpirasi"} },
+  { id:2, subtes:"Makhluk Hidup", teks:"(Contoh) Hewan yang mengalami metamorfosis sempurna adalah ...", pilihan:{A:"Kupu-kupu",B:"Belalang",C:"Kecoa",D:"Capung"} },
+  { id:3, subtes:"Energi dan Perubahannya", teks:"(Contoh) Berikut ini yang termasuk sumber energi tidak dapat diperbarui adalah ...", pilihan:{A:"Cahaya matahari",B:"Angin",C:"Batu bara",D:"Air terjun"} },
+  { id:4, subtes:"Energi dan Perubahannya", teks:"(Contoh) Perubahan energi yang terjadi pada setrika listrik saat digunakan adalah dari energi listrik menjadi energi ...", pilihan:{A:"Gerak",B:"Cahaya",C:"Panas",D:"Bunyi"} },
+  { id:5, subtes:"Bumi dan Alam Semesta", teks:"(Contoh) Peristiwa berputarnya Bumi pada porosnya disebut ...", pilihan:{A:"Revolusi Bumi",B:"Rotasi Bumi",C:"Gerhana Bumi",D:"Presesi Bumi"} },
+  { id:6, subtes:"Bumi dan Alam Semesta", teks:"(Contoh) Alat yang digunakan untuk mengukur suhu udara disebut ...", pilihan:{A:"Barometer",B:"Termometer",C:"Higrometer",D:"Anemometer"} }
+];
+
+/* ================================================================
+   EMBLEM (SVG asli/abstrak — bukan lambang negara)
+================================================================ */
+function emblemSVG(size){
+  size = size || 56;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="50" cy="50" r="47" fill="none" stroke="#c9a227" stroke-width="3"/>
+    <circle cx="50" cy="50" r="40" fill="#0b2545" stroke="#c9a227" stroke-width="1.4"/>
+    <path d="M50 23 L54.5 39 L71 39 L57.7 49.2 L62.8 65.5 L50 55.6 L37.2 65.5 L42.3 49.2 L29 39 L45.5 39 Z" fill="#c9a227"/>
+    <path d="M18 66 Q30 55 19 38" stroke="#c9a227" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M82 66 Q70 55 81 38" stroke="#c9a227" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  </svg>`;
+}
+
+/* ================================================================
+   STATE
+================================================================ */
+const state = {
+  screen: 'login',           // login | rules | exam | finished
+  peserta: { nama:'', kelas:'', sekolah:'', bidang:'IPA' },
+  currentIndex: 0,
+  jawaban: {},                // { soalId: 'A'|'B'|'C'|'D' }
+  raguRagu: {},                // { soalId: true }
+  sisaDetik: EXAM_CONFIG.durasiMenit * 60,
+  timerHandle: null,
+  waktuMulai: null,
+  showFinishModal: false,
+  finishedAt: null,
+  warnCount: 0
+};
+
+const app = document.getElementById('app');
+
+/* ================================================================
+   HELPERS
+================================================================ */
+function formatWaktu(detik){
+  const m = Math.floor(detik/60).toString().padStart(2,'0');
+  const s = Math.floor(detik%60).toString().padStart(2,'0');
+  return m+':'+s;
+}
+function hitungStatistik(){
+  const total = BANK_SOAL.length;
+  const dijawab = Object.keys(state.jawaban).length;
+  const ragu = Object.keys(state.raguRagu).filter(k=>state.raguRagu[k]).length;
+  return { total, dijawab, belum: total-dijawab, ragu };
+}
+function groupBySubtes(){
+  const map = {};
+  BANK_SOAL.forEach((s,idx)=>{
+    if(!map[s.subtes]) map[s.subtes]=[];
+    map[s.subtes].push({ ...s, idx });
+  });
+  return map;
+}
+function bidangLabel(code){
+  const map = { IPA:'IPA (Ilmu Pengetahuan Alam)', MTK:'Matematika', IPS:'IPS', BIN:'Bahasa Indonesia' };
+  return map[code] || code;
+}
+function showToast(msg){
+  const el = document.createElement('div');
+  el.className='toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 3200);
+}
+
+/* ================================================================
+   TIMER
+================================================================ */
+function startTimer(){
+  stopTimer();
+  state.waktuMulai = Date.now();
+  state.timerHandle = setInterval(()=>{
+    state.sisaDetik--;
+    updateTimerDisplay();
+    if(state.sisaDetik<=0){
+      stopTimer();
+      finishExam(true);
+    }
+  },1000);
+}
+function stopTimer(){
+  if(state.timerHandle){ clearInterval(state.timerHandle); state.timerHandle=null; }
+}
+function updateTimerDisplay(){
+  const box = document.getElementById('timerBox');
+  if(!box) return;
+  box.textContent = formatWaktu(Math.max(state.sisaDetik,0));
+  box.classList.toggle('warn', state.sisaDetik<=300);
+}
+
+/* ================================================================
+   EVENT DELEGATION
+================================================================ */
+app.addEventListener('click', (e)=>{
+  const t = e.target.closest('[data-action]');
+  if(!t) return;
+  const action = t.dataset.action;
+
+  if(action==='login') doLogin();
+  else if(action==='accept-rules') { /* handled via checkbox change */ }
+  else if(action==='start-exam') startExam();
+  else if(action==='go-prev') goTo(state.currentIndex-1);
+  else if(action==='go-next') goTo(state.currentIndex+1);
+  else if(action==='jump'){ goTo(parseInt(t.dataset.idx,10)); }
+  else if(action==='select-option'){ selectAnswer(t.dataset.qid, t.dataset.letter); }
+  else if(action==='open-finish') { state.showFinishModal = true; render(); }
+  else if(action==='cancel-finish') { state.showFinishModal = false; render(); }
+  else if(action==='confirm-finish') { finishExam(false); }
+});
+
+app.addEventListener('change', (e)=>{
+  const t = e.target;
+  if(t.id==='acceptCheckbox'){
+    document.querySelector('[data-action="start-exam"]').disabled = !t.checked;
+  }
+  if(t.dataset && t.dataset.action==='toggle-flag'){
+    const qid = t.dataset.qid;
+    state.raguRagu[qid] = t.checked;
+    renderSidebarOnly();
+  }
+});
+
+/* ================================================================
+   FLOW HANDLERS
+================================================================ */
+function doLogin(){
+  const nama = document.getElementById('inNama').value.trim();
+  const kelas = document.getElementById('inKelas').value;
+  const sekolah = document.getElementById('inSekolah').value.trim();
+  const bidang = document.getElementById('inBidang').value;
+
+  if(!nama || !kelas || !sekolah || !bidang){
+    showToast('Mohon lengkapi seluruh isian sebelum melanjutkan.');
+    return;
+  }
+  state.peserta = { nama, kelas, sekolah, bidang };
+  state.screen = 'rules';
+  render();
+}
+
+function startExam(){
+  state.screen = 'exam';
+  state.currentIndex = 0;
+  render();
+  startTimer();
+  try{
+    if(document.documentElement.requestFullscreen){
+      document.documentElement.requestFullscreen().catch(()=>{});
+    }
+  }catch(e){}
+}
+
+function goTo(idx){
+  if(idx<0 || idx>=BANK_SOAL.length) return;
+  state.currentIndex = idx;
+  render();
+}
+
+function selectAnswer(qid, letter){
+  state.jawaban[qid] = letter;
+  render();
+}
+
+function finishExam(autoBySystem){
+  stopTimer();
+  state.showFinishModal = false;
+  state.finishedAt = new Date();
+  state.autoFinished = !!autoBySystem;
+  state.screen = 'finished';
+  if(document.exitFullscreen && document.fullscreenElement){
+    document.exitFullscreen().catch(()=>{});
+  }
+  render();
+}
+
+/* Anti-cheat visual cue (demo) */
+document.addEventListener('visibilitychange', ()=>{
+  if(state.screen==='exam' && document.hidden){
+    state.warnCount++;
+    showToast('Peringatan ke-'+state.warnCount+': sistem mendeteksi Anda meninggalkan jendela ujian.');
+  }
+});
+window.addEventListener('beforeunload', (e)=>{
+  if(state.screen==='exam'){
+    e.preventDefault();
+    e.returnValue='';
+  }
+});
+
+/* ================================================================
+   RENDER — LOGIN
+================================================================ */
+function renderLogin(){
+  return `
+  <div class="ribbon">
+    <div class="ribbon-inner">
+      ${emblemSVG(48)}
+      <div class="ribbon-titles">
+        <p class="ribbon-eyebrow">${EXAM_CONFIG.namaLembaga}</p>
+        <h1 class="ribbon-title">${EXAM_CONFIG.namaUjian}</h1>
+        <p class="ribbon-sub">${EXAM_CONFIG.tahap}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage center">
+    <div class="login-wrap">
+      <div class="login-head">
+        <p class="kicker">Sistem Ujian Berbasis Komputer</p>
+        <h1>Masuk ke Sesi Tryout</h1>
+        <p>Silakan lengkapi data berikut sesuai kartu peserta Anda.</p>
+      </div>
+      <div class="card card-gold-edge login-card">
+        <div class="field">
+          <label for="inNama">Nama Lengkap</label>
+          <input id="inNama" type="text" placeholder="Tulis nama lengkap" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="inKelas">Kelas</label>
+          <select id="inKelas">
+            <option value="" disabled selected>Pilih kelas</option>
+            <option value="4">Kelas 4</option>
+            <option value="5">Kelas 5</option>
+            <option value="6">Kelas 6</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="inSekolah">Asal Sekolah</label>
+          <input id="inSekolah" type="text" placeholder="Nama sekolah asal" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="inBidang">Bidang yang Diikuti</label>
+          <select id="inBidang">
+            <option value="IPA">IPA (Ilmu Pengetahuan Alam)</option>
+            <option value="MTK" disabled>Matematika — Segera Hadir</option>
+            <option value="IPS" disabled>IPS — Segera Hadir</option>
+            <option value="BIN" disabled>Bahasa Indonesia — Segera Hadir</option>
+          </select>
+          <p class="hint">Saat ini tryout baru tersedia untuk bidang IPA.</p>
+        </div>
+        <button class="btn btn-primary" data-action="login">Masuk</button>
+        <div class="id-line"><span class="dot"></span> Sesi Latihan Mandiri &middot; Tanpa Token</div>
+      </div>
+      <p class="login-foot">Ini merupakan sistem simulasi/tryout untuk latihan menghadapi ${EXAM_CONFIG.namaUjian}.</p>
+    </div>
+  </div>
+  <div class="footer-note">&copy; 2026 ${EXAM_CONFIG.namaLembaga}. Seluruh data peserta bersifat rahasia dan digunakan hanya untuk simulasi.</div>
+  `;
+}
+
+/* ================================================================
+   RENDER — RULES / TATA TERTIB
+================================================================ */
+function renderRules(){
+  const p = state.peserta;
+  return `
+  <div class="ribbon">
+    <div class="ribbon-inner">
+      ${emblemSVG(48)}
+      <div class="ribbon-titles">
+        <p class="ribbon-eyebrow">${EXAM_CONFIG.namaLembaga}</p>
+        <h1 class="ribbon-title">${EXAM_CONFIG.namaUjian}</h1>
+        <p class="ribbon-sub">${EXAM_CONFIG.tahap}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="rules-wrap">
+      <div class="card peserta-card">
+        <div class="seal-corner stamp stamp-anim" style="width:78px;height:78px;">
+          <span class="l2" style="font-size:11px;">TERVERIFIKASI</span>
+        </div>
+        <h3>Data Peserta</h3>
+        <div class="peserta-row"><span class="k">Nama</span><span class="v">${p.nama}</span></div>
+        <div class="peserta-row"><span class="k">Kelas</span><span class="v">Kelas ${p.kelas}</span></div>
+        <div class="peserta-row"><span class="k">Asal Sekolah</span><span class="v">${p.sekolah}</span></div>
+        <div class="peserta-row"><span class="k">Bidang</span><span class="v">${bidangLabel(p.bidang)}</span></div>
+        <div class="peserta-row"><span class="k">Jumlah Soal</span><span class="v">${BANK_SOAL.length} Soal</span></div>
+        <div class="peserta-row"><span class="k">Durasi</span><span class="v">${EXAM_CONFIG.durasiMenit} Menit</span></div>
+      </div>
+
+      <div class="card rules-card">
+        <h2>Tata Tertib Peserta</h2>
+        <ol>
+          <li>Pastikan koneksi internet stabil selama sesi ujian berlangsung.</li>
+          <li>Peserta dilarang membuka aplikasi, tab, atau jendela lain selama ujian berlangsung.</li>
+          <li>Waktu pengerjaan akan berjalan otomatis dan tidak dapat dihentikan setelah dimulai.</li>
+          <li>Jawaban tersimpan otomatis setiap kali peserta memilih opsi jawaban.</li>
+          <li>Peserta dapat menandai soal yang masih ragu untuk ditinjau kembali sebelum waktu berakhir.</li>
+          <li>Ujian akan berakhir otomatis apabila waktu telah habis.</li>
+          <li>Peserta wajib menekan tombol "Selesai Ujian" setelah seluruh soal dikerjakan.</li>
+          <li>Segala bentuk kecurangan akan mengakibatkan diskualifikasi dari seleksi.</li>
+        </ol>
+        <div class="confirm-row">
+          <input type="checkbox" id="acceptCheckbox">
+          <label for="acceptCheckbox">Saya telah membaca, memahami, dan bersedia mematuhi tata tertib ujian di atas.</label>
+        </div>
+        <button class="btn btn-primary" data-action="start-exam" disabled style="width:auto; padding:12px 26px;">Mulai Mengerjakan Soal</button>
+      </div>
+    </div>
+  </div>
+  <div class="footer-note">Setelah menekan tombol mulai, sesi ujian dan penghitung waktu akan langsung aktif.</div>
+  `;
+}
+
+/* ================================================================
+   RENDER — EXAM
+================================================================ */
+function renderExam(){
+  const soal = BANK_SOAL[state.currentIndex];
+  const stat = hitungStatistik();
+  const grouped = groupBySubtes();
+  const isFirst = state.currentIndex===0;
+  const isLast = state.currentIndex===BANK_SOAL.length-1;
+  const selected = state.jawaban[soal.id];
+  const flagged = !!state.raguRagu[soal.id];
+
+  const optionsHTML = Object.entries(soal.pilihan).map(([letter,txt])=>`
+    <div class="option ${selected===letter?'selected':''}" data-action="select-option" data-qid="${soal.id}" data-letter="${letter}" role="button" tabindex="0">
+      <span class="letter">${letter}</span>
+      <span class="txt">${txt}</span>
+    </div>
+  `).join('');
+
+  const sidebarHTML = Object.entries(grouped).map(([subj,items])=>`
+    <div class="subj-group">
+      <div class="label">${subj}</div>
+      <div class="num-grid">
+        ${items.map(it=>{
+          const answered = state.jawaban[it.id]!==undefined;
+          const isFlag = !!state.raguRagu[it.id];
+          const isCurrent = it.idx===state.currentIndex;
+          return `<button class="num-btn ${answered?'answered':''} ${isFlag?'flagged':''} ${isCurrent?'current':''}" data-action="jump" data-idx="${it.idx}">${it.idx+1}</button>`;
+        }).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  return `
+  <div class="exam-topbar">
+    <div class="exam-topbar-inner">
+      <div class="exam-brand">
+        ${emblemSVG(34)}
+        <div>
+          <div class="name">${EXAM_CONFIG.namaUjian}</div>
+          <div class="sub">${EXAM_CONFIG.tahap}</div>
+        </div>
+      </div>
+      <div class="session-pill"><span class="session-dot"></span> Sesi Aktif</div>
+      <div class="spacer"></div>
+      <div class="participant-chip">
+        <b>${state.peserta.nama}</b>
+        Kelas ${state.peserta.kelas} &middot; ${bidangLabel(state.peserta.bidang)}
+      </div>
+      <div>
+        <div class="timer-label">Sisa Waktu</div>
+        <div class="timer-box" id="timerBox">${formatWaktu(state.sisaDetik)}</div>
+      </div>
+      <button class="btn btn-danger btn-finish" data-action="open-finish">Selesai Ujian</button>
+    </div>
+  </div>
+
+  <div class="exam-body">
+    <div class="card question-card">
+      <div class="q-meta">
+        <span class="q-subject">${soal.subtes}</span>
+        <span class="q-number">Soal <b>${state.currentIndex+1}</b> dari ${BANK_SOAL.length}</span>
+      </div>
+      <div class="q-text">${soal.teks}</div>
+      <div class="options">${optionsHTML}</div>
+      <div class="flag-row">
+        <input type="checkbox" id="flag-${soal.id}" data-action="toggle-flag" data-qid="${soal.id}" ${flagged?'checked':''}>
+        <label for="flag-${soal.id}">Tandai untuk ditinjau kembali (ragu-ragu)</label>
+      </div>
+      <div class="qnav">
+        <button class="btn btn-outline" data-action="go-prev" ${isFirst?'disabled':''}>&larr; Sebelumnya</button>
+        <button class="btn btn-primary" style="width:auto; padding:12px 24px;" data-action="go-next" ${isLast?'disabled':''}>Selanjutnya &rarr;</button>
+      </div>
+    </div>
+
+    <div class="card side-card" id="sidebarCard">
+      <div class="side-title">
+        <span>Navigasi Soal</span>
+        <span>${stat.dijawab}/${stat.total}</span>
+      </div>
+      <div class="side-progress"><div class="side-progress-bar" style="width:${(stat.dijawab/stat.total*100)||0}%"></div></div>
+      <div class="legend">
+        <span><i style="background:#fff;border-color:var(--line);"></i>Belum dijawab</span>
+        <span><i style="background:var(--navy-700);border-color:var(--navy-700);"></i>Terjawab</span>
+        <span><i style="background:var(--gold-500);border-color:var(--gold-500);"></i>Ragu-ragu</span>
+      </div>
+      ${sidebarHTML}
+      <div class="side-finish">
+        <button class="btn btn-danger" style="width:100%;" data-action="open-finish">Selesai Ujian</button>
+      </div>
+    </div>
+  </div>
+
+  ${state.showFinishModal ? renderFinishModal(stat) : ''}
+  `;
+}
+
+function renderFinishModal(stat){
+  return `
+  <div class="overlay">
+    <div class="modal">
+      <h3>Akhiri Sesi Ujian?</h3>
+      <p>Pastikan seluruh jawaban telah Anda periksa. Setelah diakhiri, sesi ujian tidak dapat dilanjutkan kembali.</p>
+      <div class="modal-stats">
+        <div><b>${stat.dijawab}</b><span>Terjawab</span></div>
+        <div><b>${stat.belum}</b><span>Belum</span></div>
+        <div><b>${stat.ragu}</b><span>Ragu-ragu</span></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" data-action="cancel-finish">Batal, Kembali</button>
+        <button class="btn btn-danger" data-action="confirm-finish">Ya, Selesaikan</button>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+/* update only sidebar (used on flag toggle to avoid full re-render focus loss) */
+function renderSidebarOnly(){
+  render();
+}
+
+/* ================================================================
+   RENDER — FINISHED
+================================================================ */
+function renderFinished(){
+  const stat = hitungStatistik();
+  const waktuTerpakai = EXAM_CONFIG.durasiMenit*60 - state.sisaDetik;
+  return `
+  <div class="ribbon">
+    <div class="ribbon-inner">
+      ${emblemSVG(48)}
+      <div class="ribbon-titles">
+        <p class="ribbon-eyebrow">${EXAM_CONFIG.namaLembaga}</p>
+        <h1 class="ribbon-title">${EXAM_CONFIG.namaUjian}</h1>
+        <p class="ribbon-sub">${EXAM_CONFIG.tahap}</p>
+      </div>
+    </div>
+  </div>
+  <div class="stage center">
+    <div class="finish-wrap">
+      <div class="card card-gold-edge finish-card">
+        <div class="stamp stamp-anim" style="margin:0 auto;">
+          <span class="l1">Resmi</span>
+          <span class="l2">SELESAI</span>
+          <span class="l3">${EXAM_CONFIG.namaUjian}</span>
+        </div>
+        <h2>Ujian Telah Selesai</h2>
+        <p>${state.autoFinished ? 'Waktu pengerjaan telah habis dan sesi diakhiri otomatis oleh sistem.' : 'Terima kasih, jawaban Anda telah tersimpan.'}</p>
+        <div class="stat-grid">
+          <div class="stat-box"><b>${stat.dijawab}</b><span>Terjawab</span></div>
+          <div class="stat-box"><b>${stat.ragu}</b><span>Ragu-ragu</span></div>
+          <div class="stat-box"><b>${formatWaktu(waktuTerpakai)}</b><span>Waktu Terpakai</span></div>
+        </div>
+        <p style="font-size:11.5px;">Peserta: <b>${state.peserta.nama}</b> &middot; Kelas ${state.peserta.kelas} &middot; ${state.peserta.sekolah}</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer-note">Mohon tetap tenang di tempat duduk hingga pengawas memberikan instruksi selanjutnya.</div>
+  `;
+}
+
+/* ================================================================
+   MAIN RENDER DISPATCH
+================================================================ */
+function render(){
+  let html = '';
+  if(state.screen==='login') html = renderLogin();
+  else if(state.screen==='rules') html = renderRules();
+  else if(state.screen==='exam') html = renderExam();
+  else if(state.screen==='finished') html = renderFinished();
+  app.innerHTML = html;
+  if(state.screen==='exam') updateTimerDisplay();
+}
+
+render();
+</script>
+</body>
+</html>
