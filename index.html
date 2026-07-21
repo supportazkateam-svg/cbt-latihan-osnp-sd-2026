@@ -311,7 +311,7 @@
   
   .score-board { text-align: center; margin: 10px 0 24px; }
   .score-circle {
-      width: 90px; height: 90px; border-radius: 50%;
+      width: 100px; height: 100px; border-radius: 50%;
       background: var(--navy-900); border: 4px solid var(--gold-500);
       margin: 0 auto 12px; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
@@ -319,7 +319,7 @@
       color: #fff;
   }
   .score-circle .val { font-size: 32px; font-family: var(--font-display); font-weight: bold; line-height: 1; }
-  .score-circle .lbl { font-size: 9.5px; color: var(--gold-400); letter-spacing: 0.1em; margin-top: 4px; text-transform: uppercase; font-weight:bold; }
+  .score-circle .lbl { font-size: 9px; color: var(--gold-400); letter-spacing: 0.1em; margin-top: 4px; text-transform: uppercase; font-weight:bold; }
   
   .score-category { font-size: 15px; font-weight: bold; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
   .score-category.sangat-baik { color: var(--green-600); }
@@ -691,7 +691,7 @@ const state = {
 const app = document.getElementById('app');
 
 /* ================================================================
-   HELPERS & GRADING SYSTEM
+   HELPERS & GRADING SYSTEM (SESUAI ATURAN OSNP 2026)
 ================================================================ */
 function formatWaktu(detik){
   const h = Math.floor(detik/3600).toString().padStart(2,'0');
@@ -708,12 +708,18 @@ function hitungStatistik(){
 }
 
 function hitungSkor() {
-    let skorMentah = 0;
-    let skorMaksimal = 0;
+    let totalNilaiAkhir = 0;
+    let totalNilaiMaksimal = 0;
 
     BANK_SOAL.forEach(soal => {
-        const bobot = soal.level; 
-        skorMaksimal += (bobot * 2); 
+        // Tentukan bobot soal OSN-P IPA berdasarkan tingkat kesulitan (Level 1, 2, 3)
+        let bobot = 1.00; // Mudah
+        if (soal.level === 2) bobot = 1.25; // Sedang
+        else if (soal.level === 3) bobot = 1.50; // Sulit
+
+        // Setiap soal maksimal menyumbang 2 poin mentah (karena ada 2 bagian isian: A dan B)
+        let maxRaw = 2; 
+        totalNilaiMaksimal += (maxRaw * bobot);
 
         let jawabUser = (state.jawaban[soal.id] || "").toLowerCase().trim();
         let ansA = jawabUser;
@@ -737,17 +743,26 @@ function hitungSkor() {
             });
         };
 
-        if (cekBenar(soal.kunci[0].toLowerCase(), ansA)) skorMentah += bobot;
-        if (cekBenar(soal.kunci[1].toLowerCase(), ansB)) skorMentah += bobot;
+        // Hitung Nilai Mentah (Benar = +1, Salah/Kosong = 0)
+        let rawScore = 0;
+        if (cekBenar(soal.kunci[0].toLowerCase(), ansA)) rawScore += 1;
+        if (cekBenar(soal.kunci[1].toLowerCase(), ansB)) rawScore += 1;
+
+        // Pengolahan Tahap Kedua: Nilai Mentah x Bobot Soal
+        let nilaiSoal = rawScore * bobot;
+        totalNilaiAkhir += nilaiSoal;
     });
 
-    return Math.round((skorMentah / skorMaksimal) * 100);
+    return {
+        nilaiAkhir: Number(totalNilaiAkhir.toFixed(2)),
+        skala100: Math.round((totalNilaiAkhir / totalNilaiMaksimal) * 100)
+    };
 }
 
-function getScoreCategory(skor) {
-    if (skor >= 95) return { name: "Sangat Baik", class: "sangat-baik", note: "Luar biasa! Penguasaan materi sains dan daya nalar (HOTS) kamu sangat mumpuni. Pertahankan prestasimu untuk meraih medali di tahap selanjutnya!" };
-    if (skor >= 80) return { name: "Baik", class: "baik", note: "Kerja bagus! Kamu sudah memahami banyak konsep dasar dengan baik. Tingkatkan sedikit lagi ketelitianmu pada beberapa soal hitungan dan logika." };
-    if (skor >= 60) return { name: "Memadai", class: "memadai", note: "Hasil yang cukup memadai, namun masih banyak ruang untuk berkembang. Perbanyak lagi jam terbang latihan soal-soal penalaran tingkat tinggi." };
+function getScoreCategory(skala100) {
+    if (skala100 >= 95) return { name: "Sangat Baik", class: "sangat-baik", note: "Luar biasa! Penguasaan materi sains dan daya nalar (HOTS) kamu sangat mumpuni. Pertahankan prestasimu untuk meraih medali di tahap selanjutnya!" };
+    if (skala100 >= 80) return { name: "Baik", class: "baik", note: "Kerja bagus! Kamu sudah memahami banyak konsep dasar dengan baik. Tingkatkan sedikit lagi ketelitianmu pada beberapa soal hitungan dan logika." };
+    if (skala100 >= 60) return { name: "Memadai", class: "memadai", note: "Hasil yang cukup memadai, namun masih banyak ruang untuk berkembang. Perbanyak lagi jam terbang latihan soal-soal penalaran tingkat tinggi." };
     return { name: "Kurang", class: "kurang", note: "Jangan patah semangat! Jadikan hasil ini sebagai evaluasi untuk mengulang kembali pondasi dasar sainsmu bersama guru pembinamu." };
 }
 
@@ -1245,8 +1260,8 @@ function renderSidebarOnly(){
 function renderFinished(){
   const stat = hitungStatistik();
   const waktuTerpakai = EXAM_CONFIG.durasiMenit*60 - state.sisaDetik;
-  const skor = hitungSkor();
-  const cat = getScoreCategory(skor);
+  const skorData = hitungSkor();
+  const cat = getScoreCategory(skorData.skala100);
 
   return `
   <div class="ribbon">
@@ -1271,8 +1286,8 @@ function renderFinished(){
         
         <div class="score-board">
            <div class="score-circle">
-              <span class="val">${skor}</span>
-              <span class="lbl">Skor Akhir</span>
+              <span class="val">${skorData.nilaiAkhir}</span>
+              <span class="lbl">Nilai Akhir</span>
            </div>
            <div class="score-category ${cat.class}">${cat.name}</div>
            <div class="score-note">${cat.note}</div>
