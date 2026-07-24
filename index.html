@@ -334,7 +334,7 @@
   .stat-box b{display:block; font-size:20px; color:var(--navy-900);}
   .stat-box span{font-size:10px; color:var(--ink-400); text-transform:uppercase; letter-spacing:.04em;}
   
-  /* ===================== BLOCKED SCREEN ===================== */
+  /* ===================== BLOCKED / MAINTENANCE SCREEN ===================== */
   .blocked-screen {
       position: fixed; inset: 0; background: var(--navy-900); color: #fff; z-index: 99999;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -352,6 +352,12 @@
 <div id="app"></div>
 
 <script>
+/* ================================================================
+   SAKELAR MAINTENANCE (KUNCI CBT)
+   Ubah nilai di bawah ini menjadi `false` jika ingin membuka CBT kembali.
+================================================================ */
+const MAINTENANCE_MODE = true; 
+
 let clientIP = "Memuat IP...";
 fetch('https://api.ipify.org?format=json').then(r => r.json()).then(data => clientIP = data.ip).catch(()=> clientIP = "Perangkat Anda");
 
@@ -712,12 +718,10 @@ function hitungSkor() {
     let totalNilaiMaksimal = 0;
 
     BANK_SOAL.forEach(soal => {
-        // Tentukan bobot soal OSN-P IPA berdasarkan tingkat kesulitan (Level 1, 2, 3)
-        let bobot = 1.00; // Mudah
-        if (soal.level === 2) bobot = 1.25; // Sedang
-        else if (soal.level === 3) bobot = 1.50; // Sulit
+        let bobot = 1.00;
+        if (soal.level === 2) bobot = 1.25;
+        else if (soal.level === 3) bobot = 1.50;
 
-        // Setiap soal maksimal menyumbang 2 poin mentah (karena ada 2 bagian isian: A dan B)
         let maxRaw = 2; 
         totalNilaiMaksimal += (maxRaw * bobot);
 
@@ -743,12 +747,10 @@ function hitungSkor() {
             });
         };
 
-        // Hitung Nilai Mentah (Benar = +1, Salah/Kosong = 0)
         let rawScore = 0;
         if (cekBenar(soal.kunci[0].toLowerCase(), ansA)) rawScore += 1;
         if (cekBenar(soal.kunci[1].toLowerCase(), ansB)) rawScore += 1;
 
-        // Pengolahan Tahap Kedua: Nilai Mentah x Bobot Soal
         let nilaiSoal = rawScore * bobot;
         totalNilaiAkhir += nilaiSoal;
     });
@@ -969,6 +971,41 @@ function finishExam(autoBySystem){
     }
   }catch(e){}
   render();
+}
+
+/* ================================================================
+   RENDER — MAINTENANCE (LOCKED MODAL)
+================================================================ */
+function renderMaintenance(){
+  return `
+  <div class="ribbon">
+    <div class="ribbon-inner">
+      ${renderLogos(48)}
+      <div class="ribbon-titles">
+        <p class="ribbon-eyebrow">${EXAM_CONFIG.namaLembaga}</p>
+        <h1 class="ribbon-title">${EXAM_CONFIG.namaUjian}</h1>
+        <p class="ribbon-sub">Sistem Sedang Dialihkan</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="stage center">
+    <!-- Konten di belakang menjadi samar/gelap -->
+  </div>
+
+  <div class="overlay" style="z-index:99999; backdrop-filter: blur(5px);">
+    <div class="modal" style="border-top-color: var(--crimson-600); text-align: center; box-shadow: 0 40px 80px rgba(0,0,0,0.5);">
+      <div class="stamp stamp-anim" style="margin:0 auto 16px; width:80px; height:80px; border-color:var(--crimson-600); color:var(--crimson-600);">
+        <span class="l2" style="font-size:13px; font-weight:900;">LOCKED</span>
+      </div>
+      <h3 style="color: var(--crimson-700); font-size: 22px;">Akses CBT Terkunci</h3>
+      <div style="background: #fbfcfe; border: 1px solid var(--line); border-left: 5px solid var(--crimson-600); padding: 18px; border-radius: 6px; margin: 20px 0; color: var(--navy-900); font-size: 14.5px; text-align: left; line-height: 1.6; font-weight: 500;">
+        Mohon maaf, akses Anda menuju CBT ini terkunci karena CBT dialihkan ke jenis ujian yang baru.
+      </div>
+      <p style="font-size: 12px; color: var(--ink-400); margin-bottom: 0;">Silakan tunggu arahan lebih lanjut dari panitia atau pengawas Anda.</p>
+    </div>
+  </div>
+  `;
 }
 
 /* ================================================================
@@ -1310,6 +1347,12 @@ function renderFinished(){
    DISPATCHER & SECURITY
 ================================================================ */
 function render(){
+  // Jika sakelar MAINTENANCE_MODE nyala, panggil modal kunci
+  if (MAINTENANCE_MODE) {
+      app.innerHTML = renderMaintenance();
+      return;
+  }
+
   let html = '';
   if (state.screen === 'blocked') html = renderBlocked();
   else if (state.screen === 'login') html = renderLogin();
@@ -1322,9 +1365,11 @@ function render(){
   if(state.screen==='exam' && !state.showKickModal) updateTimerDisplay();
 }
 
+// Cek status blokir dulu, jika lulus akan menjalankan render()
 if (!checkBlockStatus()) render();
 
 function kickOutPeserta(alasan) {
+    if(MAINTENANCE_MODE) return;
     if(state.showKickModal || state.screen === 'blocked') return; 
     stopTimer(); 
     try{
@@ -1348,9 +1393,9 @@ function kickOutPeserta(alasan) {
     }
 }
 
-document.addEventListener('visibilitychange', () => { if (state.screen === 'exam' && document.hidden) kickOutPeserta("Meninggalkan tab lembar ujian."); });
-window.addEventListener('blur', () => { if (state.screen === 'exam') kickOutPeserta("Kehilangan fokus jendela (Membuka aplikasi lain)."); });
-document.addEventListener('fullscreenchange', () => { if (state.screen === 'exam' && !document.fullscreenElement) kickOutPeserta("Keluar dari mode layar penuh wajib."); });
+document.addEventListener('visibilitychange', () => { if (!MAINTENANCE_MODE && state.screen === 'exam' && document.hidden) kickOutPeserta("Meninggalkan tab lembar ujian."); });
+window.addEventListener('blur', () => { if (!MAINTENANCE_MODE && state.screen === 'exam') kickOutPeserta("Kehilangan fokus jendela (Membuka aplikasi lain)."); });
+document.addEventListener('fullscreenchange', () => { if (!MAINTENANCE_MODE && state.screen === 'exam' && !document.fullscreenElement) kickOutPeserta("Keluar dari mode layar penuh wajib."); });
 </script>
 </body>
 </html>
